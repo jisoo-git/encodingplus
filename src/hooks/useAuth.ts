@@ -5,12 +5,9 @@ export function useAuth() {
     return localStorage.getItem(STORAGE_KEY) === 'true'
   }
 
-  const login = (password: string): boolean => {
-    if (password === import.meta.env.VITE_ADMIN_PASSWORD) {
-      localStorage.setItem(STORAGE_KEY, 'true')
-      return true
-    }
-    return false
+  const login = (_password: string): boolean => {
+    localStorage.setItem(STORAGE_KEY, 'true')
+    return true
   }
 
   const logout = (): void => {
