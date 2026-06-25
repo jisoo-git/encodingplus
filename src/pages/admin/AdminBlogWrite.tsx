@@ -93,7 +93,7 @@ export default function AdminBlogWrite() {
     return {
       tag: tag.trim(), title: title.trim(), excerpt: excerpt.trim(),
       coverImage: coverImage.trim(), content: cleanBlocks,
-      date: isEdit ? undefined : today,
+      ...(isEdit ? {} : { date: today }),
       read: estimateRead(),
       published,
       updatedAt: serverTimestamp(),
@@ -206,7 +206,7 @@ export default function AdminBlogWrite() {
             <button
               onClick={handleSaveDraft}
               disabled={savingDraft}
-              style={{ background: '#f4f4f6', border: '1px solid #c8d0dc', color: '#52525b', fontSize: 13, fontWeight: 600, padding: '9px 14px', borderRadius: 10, cursor: savingDraft ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
+              style={{ background: '#f4f4f6', border: 'none', color: '#52525b', fontSize: 13, fontWeight: 600, padding: '9px 14px', borderRadius: 10, cursor: savingDraft ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
             >
               {savingDraft ? '저장 중...' : '초안 저장'}
             </button>
