@@ -43,8 +43,6 @@ function formatDate(sub: Submission) {
   }
 }
 
-// UUID 여부 판단 (8-4-4-4-12 패턴)
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 export default function AdminSubmissions() {
   const [submissions, setSubmissions] = useState<Submission[]>([])
@@ -273,7 +271,7 @@ export default function AdminSubmissions() {
               {selected.detail && Object.keys(selected.detail).length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 20, border: '1px solid #c8d0dc', borderRadius: 12, overflow: 'hidden' }}>
                   {Object.entries(selected.detail).map(([key, val], i, arr) => {
-                    const label = UUID_RE.test(key) ? (labelMap[key] ?? key) : key
+                    const label = labelMap[key] ?? key
                     return (
                       <div
                         key={key}
