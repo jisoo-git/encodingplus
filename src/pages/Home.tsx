@@ -100,19 +100,21 @@ export default function Home() {
                 key={b.id}
                 style={{
                   position: 'absolute', inset: 0,
-                  background: b.bg,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  ...(b.image ? { backgroundImage: `url(${b.image})` } : {}),
+                  ...(b.image
+                    ? { backgroundImage: `url(${b.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    : { background: b.bg }
+                  ),
                   opacity: i === slide ? 1 : 0,
                   transition: 'opacity 0.45s ease',
                   pointerEvents: i === slide ? 'auto' : 'none',
                 }}
               >
-                {/* 텍스트 가독성 오버레이 */}
+                {/* 텍스트 가독성 오버레이 — 이미지일 때 더 강하게 */}
                 <div style={{
                   position: 'absolute', inset: 0,
-                  background: 'linear-gradient(to right, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.08) 100%)',
+                  background: b.image
+                    ? 'linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 100%)'
+                    : 'linear-gradient(to right, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.08) 100%)',
                 }} />
                 <div style={{ position: 'relative', zIndex: 1, padding: '24px 24px 56px', height: '100%' }}>
                   <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.72)', letterSpacing: '0.08em', marginBottom: 10 }}>{b.badge}</div>

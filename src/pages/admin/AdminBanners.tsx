@@ -11,12 +11,13 @@ interface Banner {
   title: string
   sub: string
   bg: string
+  image?: string
   cta: string
   link: string
   order: number
 }
 
-const EMPTY_FORM = { badge: '', title: '', sub: '', bg: 'linear-gradient(135deg, #002B5C 0%, #2563eb 100%)', cta: '수강 신청하기', link: '/apply' }
+const EMPTY_FORM = { badge: '', title: '', sub: '', bg: 'linear-gradient(135deg, #002B5C 0%, #2563eb 100%)', image: '', cta: '수강 신청하기', link: '/apply' }
 const BG_PRESETS = [
   { color: 'linear-gradient(135deg, #002B5C 0%, #2563eb 100%)', label: '진파랑' },
   { color: 'linear-gradient(135deg, #001233 0%, #003580 100%)', label: '네이비' },
@@ -61,7 +62,7 @@ export default function AdminBanners() {
   }
 
   function openEdit(banner: Banner) {
-    setForm({ badge: banner.badge, title: banner.title, sub: banner.sub, bg: banner.bg, cta: banner.cta, link: banner.link })
+    setForm({ badge: banner.badge, title: banner.title, sub: banner.sub, bg: banner.bg, image: banner.image ?? '', cta: banner.cta, link: banner.link })
     setSheet(banner)
   }
 
@@ -263,8 +264,14 @@ export default function AdminBanners() {
               </div>
 
               {/* 미리보기 */}
-              <div style={{ background: form.bg || 'linear-gradient(135deg, #002B5C 0%, #2563eb 100%)', borderRadius: 12, padding: '22px 18px', marginBottom: 20, minHeight: 100, position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.08) 100%)', borderRadius: 12 }} />
+              <div style={{
+                borderRadius: 12, padding: '22px 18px', marginBottom: 20, minHeight: 100, position: 'relative', overflow: 'hidden',
+                ...(form.image
+                  ? { backgroundImage: `url(${form.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  : { background: form.bg || 'linear-gradient(135deg, #002B5C 0%, #2563eb 100%)' }
+                ),
+              }}>
+                <div style={{ position: 'absolute', inset: 0, background: form.image ? 'linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 100%)' : 'linear-gradient(to right, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.08) 100%)', borderRadius: 12 }} />
                 <div style={{ position: 'relative', zIndex: 1 }}>
                   <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.72)', letterSpacing: '0.08em', marginBottom: 8 }}>{form.badge || '뱃지'}</div>
                   <div style={{ fontSize: 20, fontWeight: 800, color: '#fff', whiteSpace: 'pre-line', lineHeight: 1.25, marginBottom: 6 }}>{form.title || '제목'}</div>
@@ -317,10 +324,38 @@ export default function AdminBanners() {
                   />
                 </div>
 
-                {/* 배경색 */}
+                {/* 배경 이미지 URL */}
                 <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#52525b', marginBottom: 8 }}>배경색</div>
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#52525b', marginBottom: 4 }}>배경 이미지 URL</div>
+                  <div style={{ fontSize: 11, color: '#8c959f', marginBottom: 8 }}>
+                    프로젝트 이미지: <code style={{ background: '#f4f4f6', padding: '1px 5px', borderRadius: 4 }}>/banners/banner1.png</code> 또는 외부 URL
+                  </div>
+                  <input
+                    value={form.image ?? ''}
+                    onChange={e => setForm(f => ({ ...f, image: e.target.value }))}
+                    placeholder="/banners/banner1.png 또는 https://..."
+                    style={{ width: '100%', border: '1px solid #c8d0dc', borderRadius: 10, padding: '11px 14px', fontSize: 13, outline: 'none', boxSizing: 'border-box', fontFamily: 'monospace' }}
+                    onFocus={e => { e.target.style.borderColor = '#2563eb' }}
+                    onBlur={e => { e.target.style.borderColor = '#c8d0dc' }}
+                  />
+                  {form.image && (
+                    <div style={{ marginTop: 8, borderRadius: 8, overflow: 'hidden', height: 80, background: '#f0f1f4' }}>
+                      <img src={form.image} alt="미리보기" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                  )}
+                  {form.image && (
+                    <button onClick={() => setForm(f => ({ ...f, image: '' }))}
+                      style={{ marginTop: 6, fontSize: 12, color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                      이미지 제거
+                    </button>
+                  )}
+                </div>
+
+                {/* 배경색 — 이미지 없을 때만 활성 */}
+                <div style={{ opacity: form.image ? 0.4 : 1, pointerEvents: form.image ? 'none' : 'auto' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#52525b', marginBottom: 4 }}>배경색</div>
+                  {form.image && <div style={{ fontSize: 11, color: '#8c959f', marginBottom: 8 }}>이미지 사용 중 — 이미지를 제거하면 배경색이 적용됩니다</div>}
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: form.image ? 0 : 8 }}>
                     {BG_PRESETS.map(p => (
                       <button
                         key={p.color}
