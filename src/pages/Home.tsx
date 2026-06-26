@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
 import { collection, getDocs, orderBy, query } from 'firebase/firestore'
 import { db } from '../firebase/config'
-import whyContent from '../data/why.md?raw'
 
 interface Banner {
   id: string; badge: string; title: string; sub: string
@@ -23,6 +20,33 @@ const STATS = [
   { num: '1위', label: '디미고 합격률' },
   { num: '37명', label: '2026 디미고' },
   { num: '9년', label: '입시 전문' },
+]
+
+const WHY_CARDS = [
+  {
+    num: '01',
+    title: '전학과 맞춤',
+    sub: '어느 학과를 목표로 해도\n완벽하게 준비합니다',
+    desc: '디미고 4개 학과 모두 커버하는 유일한 전문 입시 학원입니다. 학과별 특성에 맞는 코딩 실적물, 자기소개서, 면접까지 맞춤 지도합니다.',
+    tags: ['웹프로그래밍', '해킹방어', 'e-비즈니스', '디지털콘텐츠'],
+    highlight: null as null | { num: string; label: string },
+  },
+  {
+    num: '02',
+    title: '최강 교사진',
+    sub: '디미고 출신 선생님\n+ 30년 입시 전문가',
+    desc: '직접 디미고를 다닌 선생님이 학교 생활·면접·커리큘럼의 생생한 정보를 전달합니다. 30년 베테랑 입시 선생님이 성적 분석과 전략 컨설팅을 담당합니다.',
+    tags: ['디미고 동문 강사', '30년 입시 컨설팅'],
+    highlight: null,
+  },
+  {
+    num: '03',
+    title: '압도적 실적',
+    sub: '9년간 쌓아온 데이터가\n합격을 만듭니다',
+    desc: '소질적성검사 기출, 면접 질문 DB, 합격 자기소개서 사례까지 — 9년 동안 축적한 인코딩플러스만의 합격 노하우를 아낌없이 활용합니다.',
+    tags: [],
+    highlight: { num: '212명', label: '전국 최다 누적 합격생' },
+  },
 ]
 
 const COURSES_PREVIEW = [
@@ -185,7 +209,7 @@ export default function Home() {
       </div>
 
       {/* ══ SECTION 3: WHY 인코딩플러스 ══ */}
-      <div style={{ background: '#fff', padding: '52px 0' }}>
+      <div style={{ background: '#fafafa', padding: '52px 0' }}>
         <div className="md:max-w-[1100px] md:mx-auto" style={{ padding: '0 18px' }}>
           <div style={{ textAlign: 'center', marginBottom: 32 }}>
             <div style={{ width: 28, height: 3, background: '#2563eb', borderRadius: 999, margin: '0 auto 10px' }} />
@@ -195,14 +219,67 @@ export default function Home() {
             </div>
             <div style={{ fontSize: 14, color: '#71717a', marginTop: 10 }}>디미고 입시, 혼자 준비하기엔 너무 많은 것이 걸려 있습니다.</div>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {whyContent.split('\n---\n').filter(s => s.trim()).map((section, i) => (
+            {WHY_CARDS.map(card => (
               <div
-                key={i}
-                className="hover-card why-card-md"
-                style={{ background: '#fff', border: '1px solid #c8d0dc', borderRadius: 14, padding: '20px', boxShadow: '0 2px 8px rgba(0,55,112,0.07)' }}
+                key={card.num}
+                className="hover-card"
+                style={{
+                  background: '#fff', border: '1px solid #c8d0dc', borderRadius: 16,
+                  padding: '24px 22px', display: 'flex', flexDirection: 'column', gap: 0,
+                  boxShadow: '0 2px 8px rgba(0,55,112,0.07)',
+                }}
               >
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{section.trim()}</ReactMarkdown>
+                {/* 번호 뱃지 */}
+                <div style={{
+                  width: 38, height: 38, borderRadius: 11, background: '#dbeafe',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18,
+                }}>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: '#2563eb', letterSpacing: '0.04em' }}>{card.num}</span>
+                </div>
+
+                {/* 제목 */}
+                <div style={{ fontSize: 19, fontWeight: 800, color: '#18181b', letterSpacing: '-0.02em', marginBottom: 8 }}>
+                  {card.title}
+                </div>
+
+                {/* 부제 */}
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#2563eb', lineHeight: 1.5, marginBottom: 14, whiteSpace: 'pre-line' }}>
+                  {card.sub}
+                </div>
+
+                {/* 설명 */}
+                <div style={{ fontSize: 13, color: '#52525b', lineHeight: 1.7, marginBottom: 18, flex: 1 }}>
+                  {card.desc}
+                </div>
+
+                {/* 태그 or 하이라이트 */}
+                {card.tags.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, paddingTop: 16, borderTop: '1px solid #ececef' }}>
+                    {card.tags.map(tag => (
+                      <span
+                        key={tag}
+                        style={{ background: '#f4f4f6', borderRadius: 7, padding: '5px 10px', fontSize: 12, fontWeight: 600, color: '#52525b' }}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {card.highlight && (
+                  <div style={{
+                    marginTop: 'auto', paddingTop: 16, borderTop: '1px solid #ececef',
+                    display: 'flex', alignItems: 'center', gap: 12,
+                  }}>
+                    <div style={{ fontSize: 30, fontWeight: 800, color: '#2563eb', letterSpacing: '-0.03em', lineHeight: 1 }}>
+                      {card.highlight.num}
+                    </div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#71717a', lineHeight: 1.4 }}>
+                      {card.highlight.label}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

@@ -135,18 +135,6 @@ input, textarea, select {
   .blog-list-bottom { padding-bottom: 48px; }
 }
 
-/* WHY 섹션 카드 내부 마크다운 스타일 */
-.why-card-md h2 { font-size: 17px; font-weight: 800; color: #2563eb; margin: 0 0 6px; letter-spacing: -0.02em; }
-.why-card-md h3 { font-size: 14px; font-weight: 600; color: #18181b; margin: 0 0 10px; line-height: 1.45; }
-.why-card-md p { font-size: 13px; color: #52525b; line-height: 1.65; margin: 0 0 10px; }
-.why-card-md strong { font-weight: 700; color: #18181b; }
-.why-card-md ul { margin: 0 0 10px; padding-left: 18px; }
-.why-card-md li { font-size: 13px; color: #52525b; margin-bottom: 4px; }
-.why-card-md blockquote {
-  margin: 8px 0 0; padding: 10px 14px;
-  border-left: 3px solid #2563eb; background: #eff6ff;
-  border-radius: 0 8px 8px 0; font-size: 14px; font-weight: 700; color: #1d4ed8;
-}
 
 /* 마크다운 렌더링 스타일 */
 .md-preview { color: #3f3f46; font-size: 16px; line-height: 1.8; }
