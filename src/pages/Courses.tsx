@@ -40,7 +40,7 @@ const ADMISSION_INFO = [
 
 const SECTIONS: CourseSection[] = [
   {
-    id: 'dimigo', title: '디미고', desc: '한국디지털미디어고등학교 입시 대비 정규 과정',
+    id: 'dimigo', title: '디미고', desc: '',
     note: '2027학년도 정규 과정 · 7월 18일 개강',
     courses: [
       {
@@ -227,7 +227,7 @@ function SectionHeader({ title, desc, note }: { title: string; desc: string; not
         <span style={{ display: 'block', width: 5, height: 22, borderRadius: 3, background: '#2563eb', flexShrink: 0 }} />
         <span style={{ fontSize: 21, fontWeight: 800, letterSpacing: '-0.02em', color: '#18181b' }}>{title}</span>
       </div>
-      <div style={{ fontSize: 14, color: '#71717a', marginTop: 6, paddingLeft: 14 }}>{desc}</div>
+      {desc && <div style={{ fontSize: 14, color: '#71717a', marginTop: 6, paddingLeft: 14 }}>{desc}</div>}
       {note && (
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, margin: '10px 0 0 14px', background: '#dbeafe', color: '#1d4ed8', fontSize: 12.5, fontWeight: 700, padding: '7px 12px', borderRadius: 8 }}>
           📅 {note}
@@ -251,9 +251,6 @@ export default function Courses() {
           <div style={{ width: 28, height: 3, background: '#2563eb', borderRadius: 999, marginBottom: 10 }} />
           <div style={{ fontSize: 13, fontWeight: 700, color: '#2563eb', letterSpacing: '0.08em' }}>COURSE</div>
           <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.03em', color: '#18181b', marginTop: 4 }}>수업 소개</div>
-          <div style={{ fontSize: 14, color: '#71717a', marginTop: 8, lineHeight: 1.6 }}>
-            2027학년도 디미고 입시 대비 정규 과정입니다.
-          </div>
         </div>
       </div>
 

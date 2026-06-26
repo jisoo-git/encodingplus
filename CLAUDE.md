@@ -172,5 +172,7 @@ onBlur → borderColor #c8d0dc
 3. BottomNav safe area: CSS `env(safe-area-inset-bottom, 0px)` 필수
 4. 관리자 Bottom Sheet: overlay에 maxWidth 넣지 말 것 (배경 어둠이 잘림)
 5. 블로그 제목 "디미고 입시 블로그" → **"입시 블로그"**
-6. 배너 CTA 버튼 레이블은 `b.cta` 직접 사용 금지 → `CTA_LABELS[b.link] || b.cta` 패턴 사용
+6. 배너 CTA 버튼 레이블: `b.cta` 직접 사용
 7. 블로그 카드 그리드: `gridAutoRows: '1fr'` + 카드에 `height: 100%` 필수 (행 높이 통일)
+8. Firestore `forms` 컬렉션: REST API로 직접 생성 시 **`createdAt: timestampValue`** 필수 → `useForms`가 `orderBy('createdAt')` 사용, 없으면 목록에 안 뜸
+9. enrollment 폼 섹션 제목은 Apply.tsx 검색 키워드와 **정확히** 일치해야 함: `유의사항` / `입시 단기특강` / `일반전형 특강`
