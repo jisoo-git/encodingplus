@@ -108,6 +108,16 @@
 - [x] COURSE 01 배경 `#dbeafe` → `#eff6ff` (blue-50), 두 코스 동일 무게감으로 통일
 - [x] 두 코스 accent color `#1d4ed8` → `#2563eb` (blue-600) 통일
 
+### 이미지 / 파일 관리 체계
+- [x] 이미지 관리 규칙 확립: `public/` 폴더 로컬 저장 → 절대경로 입력 방식
+- [x] `public/blog/` 폴더 생성 (블로그 대표 이미지)
+- [x] `public/files/` 폴더 생성 + xlsx 파일 추가 (`2027_교과점수계산기.xlsx`, `2028_교과점수계산기.xlsx`)
+- [x] AdminBlogWrite 대표 이미지 URL 힌트 텍스트 및 placeholder 추가 (배너와 동일 패턴)
+
+### plan / 문서
+- [x] `plan/DESIGN.md` YAML 토큰 + 섹션별 서술 구조로 전면 재작성 (BMW 스타일 디자인 지침서)
+- [x] `CLAUDE.md` 이미지 관리 규칙 섹션 추가, 배포 URL 반영
+
 ### 프로젝트 이름 변경
 - [x] GitHub 레포: `form-pwa` → `encodingplus` (macOS 키체인 토큰 + GitHub API로 직접 변경)
 - [x] 로컬 폴더: `/folder/form-pwa` → `/folder/encodingplus`
@@ -123,7 +133,7 @@
 
 ### 기능 (우선순위 낮음)
 - [ ] **조회수 카운트**: BlogPost 진입 시 `views` 필드 increment 필요
-- [ ] **이미지 업로드**: 현재 URL 직접 입력. Firebase Storage 업로드 여부 미결
+- [ ] **이미지 업로드 UI**: 현재 로컬 `public/` 폴더 + 경로 입력 방식. 관리자 UI에서 직접 업로드 기능 미구현
 
 ### 디자인 점검 필요
 - [ ] BlogPost 상세 페이지
