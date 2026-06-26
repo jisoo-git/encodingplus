@@ -10,7 +10,6 @@ interface Course {
   types: string[]           // ['특별전형'] | ['일반전형'] | ['특별전형', '일반전형']
   name: string
   sub: string
-  image?: string
   areas: Area[]
   times: TimeSlot[]
   detail: string[]
@@ -47,7 +46,6 @@ const SECTIONS: CourseSection[] = [
       {
         id: 'd-special', types: ['특별전형'],
         name: '특별전형 준비반', sub: '실적물·이론·논술 종합 대비',
-        image: 'https://picsum.photos/seed/dimigo-special/800/450',
         price: '73만원 / 월',
         areas: [
           { k: '특전 대비', v: '실적물 작업 · 이론 교육' },
@@ -66,7 +64,6 @@ const SECTIONS: CourseSection[] = [
       {
         id: 'd-general', types: ['일반전형'],
         name: '일반전형 준비반', sub: '일반전형 집중 전략',
-        image: 'https://picsum.photos/seed/dimigo-general/800/450',
         price: '48만원 / 월',
         areas: [
           { k: '코딩 수학', v: '정보 교육 중심의 수학 학습' },
@@ -90,7 +87,6 @@ const SECTIONS: CourseSection[] = [
       {
         id: 's-special', types: ['특별전형'],
         name: '특별전형 준비반', sub: '선린고 · 단소고 실적·면접 대비',
-        image: 'https://picsum.photos/seed/spec-special/800/450',
         phoneOnly: true,
         areas: [
           { k: '실적 대비', v: '포트폴리오 · 실적물 작업' },
@@ -114,7 +110,6 @@ const SECTIONS: CourseSection[] = [
       {
         id: 'k-essay', types: ['특별전형', '일반전형'],
         name: '국어 논술반', sub: '자소서·면접 답변의 논리적 설계',
-        image: 'https://picsum.photos/seed/korean-essay/800/450',
         phoneOnly: true,
         areas: [
           { k: '논리 구성', v: '글의 구조 · 논리적 사고 훈련' },
@@ -160,47 +155,25 @@ function CourseCard({ course, onClick }: { course: Course; onClick: () => void }
         background: '#fff',
         border: '1px solid #d6dde5',
         borderRadius: 16,
-        overflow: 'hidden',
+        padding: 20,
         cursor: 'pointer',
         boxShadow: '0 2px 10px rgba(0,0,0,0.07)',
-        display: 'flex',
-        flexDirection: 'column',
       }}
     >
-      {/* 썸네일 이미지 */}
-      <div style={{ height: 150, flexShrink: 0, background: '#e8eef4', overflow: 'hidden', position: 'relative' }}>
-        {course.image && (
-          <img src={course.image} alt={course.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-        )}
-        {/* 뱃지 오버레이 */}
-        <div style={{ position: 'absolute', top: 10, left: 12, display: 'flex', gap: 5 }}>
-          {course.types.map(t => {
-            const s = TYPE_STYLE[t]
-            if (!s) return null
-            return (
-              <span key={t} style={{ fontSize: 11, fontWeight: 700, color: s.color, background: 'rgba(255,255,255,0.92)', padding: '3px 9px', borderRadius: 6, backdropFilter: 'blur(4px)' }}>
-                {t}
-              </span>
-            )
-          })}
+      <TypeBadges types={course.types} />
+      <div style={{ fontSize: 18, fontWeight: 800, color: '#18181b', letterSpacing: '-0.02em' }}>{course.name}</div>
+      <div style={{ fontSize: 13.5, color: '#52525b', marginTop: 5 }}>{course.sub}</div>
+
+      <div style={{ fontWeight: 800, fontSize: 13, color: '#18181b', marginTop: 18, marginBottom: 2 }}>수업 구성</div>
+      {course.areas.map(ar => (
+        <div key={ar.k} style={{ display: 'flex', gap: 12, padding: '10px 0', borderTop: '1px solid #ebebeb' }}>
+          <div style={{ flexShrink: 0, width: 68, fontWeight: 700, fontSize: 13, color: '#18181b' }}>{ar.k}</div>
+          <div style={{ fontSize: 13, color: '#52525b' }}>{ar.v}</div>
         </div>
-      </div>
+      ))}
 
-      <div style={{ padding: '16px 20px 20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ fontSize: 18, fontWeight: 800, color: '#18181b', letterSpacing: '-0.02em' }}>{course.name}</div>
-        <div style={{ fontSize: 13.5, color: '#52525b', marginTop: 5 }}>{course.sub}</div>
-
-        <div style={{ fontWeight: 800, fontSize: 13, color: '#18181b', marginTop: 18, marginBottom: 2 }}>수업 구성</div>
-        {course.areas.map(ar => (
-          <div key={ar.k} style={{ display: 'flex', gap: 12, padding: '10px 0', borderTop: '1px solid #ebebeb' }}>
-            <div style={{ flexShrink: 0, width: 68, fontWeight: 700, fontSize: 13, color: '#18181b' }}>{ar.k}</div>
-            <div style={{ fontSize: 13, color: '#52525b' }}>{ar.v}</div>
-          </div>
-        ))}
-
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4, marginTop: 14, color: '#2563eb', fontSize: 13, fontWeight: 700 }}>
-          수업시간 · 상세 보기 →
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4, marginTop: 14, color: '#2563eb', fontSize: 13, fontWeight: 700 }}>
+        수업시간 · 상세 보기 →
       </div>
     </div>
   )
@@ -217,61 +190,21 @@ function CourseSheet({ course, onClose, navigate }: { course: Course; onClose: (
     <div className="course-sheet-overlay" onClick={onClose}>
       <div className="course-sheet-panel" onClick={e => e.stopPropagation()}>
 
-        {/* 히어로 이미지 */}
-        {course.image ? (
-          <div style={{ position: 'relative', height: 210, flexShrink: 0, overflow: 'hidden', borderRadius: '20px 20px 0 0' }}>
-            <img src={course.image} alt={course.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-            {/* 그라데이션 오버레이 */}
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.55) 100%)' }} />
-            {/* 닫기 버튼 */}
-            <button
-              onClick={onClose}
-              style={{
-                position: 'absolute', top: 14, right: 14, zIndex: 2,
-                background: 'rgba(0,0,0,0.35)', border: 'none',
-                backdropFilter: 'blur(6px)',
-                width: 32, height: 32, borderRadius: 8,
-                fontSize: 16, color: '#fff', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}
-            >×</button>
-            {/* 이미지 위 텍스트 */}
-            <div style={{ position: 'absolute', bottom: 16, left: 20, right: 20, zIndex: 1 }}>
-              <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 7 }}>
-                {course.types.map(t => {
-                  const s = TYPE_STYLE[t]
-                  if (!s) return null
-                  return (
-                    <span key={t} style={{ fontSize: 12, fontWeight: 700, color: s.color, background: 'rgba(255,255,255,0.92)', padding: '3px 9px', borderRadius: 6, backdropFilter: 'blur(4px)' }}>
-                      {t}
-                    </span>
-                  )
-                })}
-              </div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>{course.name}</div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.82)', marginTop: 3 }}>{course.sub}</div>
-            </div>
-          </div>
-        ) : (
-          /* 이미지 없을 때 기존 핸들 + 헤더 */
-          <div style={{ position: 'sticky', top: 0, background: '#fff', paddingTop: 8, zIndex: 1 }}>
-            <div style={{ width: 42, height: 5, background: '#d1d5db', borderRadius: 999, margin: '0 auto' }} />
-          </div>
-        )}
+        {/* sticky 핸들 */}
+        <div style={{ position: 'sticky', top: 0, background: '#fff', paddingTop: 8, zIndex: 1 }}>
+          <div style={{ width: 42, height: 5, background: '#d1d5db', borderRadius: 999, margin: '0 auto' }} />
+        </div>
 
         <div style={{ padding: '16px 22px 28px' }}>
 
-          {/* 이미지 없을 때만 헤더 표시 */}
-          {!course.image && (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
-                <TypeBadges types={course.types} />
-                <button onClick={onClose} style={{ flexShrink: 0, background: '#f4f4f6', border: 'none', width: 32, height: 32, borderRadius: 8, fontSize: 16, color: '#52525b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
-              </div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#18181b', letterSpacing: '-0.02em' }}>{course.name}</div>
-              <div style={{ fontSize: 14, color: '#52525b', marginTop: 5 }}>{course.sub}</div>
-            </>
-          )}
+          {/* 뱃지 + × 닫기 */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
+            <TypeBadges types={course.types} />
+            <button onClick={onClose} style={{ flexShrink: 0, background: '#f4f4f6', border: 'none', width: 32, height: 32, borderRadius: 8, fontSize: 16, color: '#52525b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+          </div>
+
+          <div style={{ fontSize: 22, fontWeight: 800, color: '#18181b', letterSpacing: '-0.02em' }}>{course.name}</div>
+          <div style={{ fontSize: 14, color: '#52525b', marginTop: 5 }}>{course.sub}</div>
 
           {/* 상세 단락 */}
           {course.detail.map((para, i) => (
