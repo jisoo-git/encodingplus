@@ -53,6 +53,10 @@ export default function Apply() {
     fetchActiveForm()
   }, [])
 
+  // 신청 확인 섹션 — info 타입 질문만 (PDF 링크 포함)
+  const confirmSection = activeForm?.sections.find(s => s.title === '신청 확인') ?? null
+  const confirmInfos = (confirmSection?.questions ?? []).filter(q => q.type === 'info')
+
   // 유의사항 섹션 — 제목 '유의사항'인 섹션의 info 타입 질문만 (없으면 하드코딩 NOTICES 사용)
   const noticesSection = activeForm?.sections.find(s => s.title === '유의사항') ?? null
   const formNotices = (noticesSection?.questions ?? []).filter(q => q.type === 'info')
@@ -267,11 +271,26 @@ export default function Apply() {
             <div>
               <div style={{ fontSize: 18, fontWeight: 800, color: '#18181b', marginBottom: 20 }}>신청 전 확인</div>
 
-              <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: '14px 16px', marginBottom: 12 }}>
-                <div style={{ fontSize: 14, color: '#1e3a8a', lineHeight: 1.75 }}>
-                  수강신청 시 입력하신 개인정보(이름, 연락처, 학교 등)는 수업 운영 및 안내 목적으로만 사용되며, 제3자에게 제공되지 않습니다.
-                </div>
-              </div>
+              {confirmInfos.length > 0
+                ? confirmInfos.map(q => (
+                    <div key={q.id} style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: '14px 16px', marginBottom: 12 }}>
+                      <div style={{ fontSize: 14, color: '#1e3a8a', lineHeight: 1.75, whiteSpace: 'pre-line' }}>{q.label}</div>
+                      {q.linkUrl && (
+                        <a href={q.linkUrl} target="_blank" rel="noreferrer"
+                          style={{ display: 'inline-block', marginTop: 10, fontSize: 13, color: '#2563eb', fontWeight: 600, textDecoration: 'underline' }}>
+                          {q.linkText || q.linkUrl}
+                        </a>
+                      )}
+                    </div>
+                  ))
+                : (
+                    <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: '14px 16px', marginBottom: 12 }}>
+                      <div style={{ fontSize: 14, color: '#1e3a8a', lineHeight: 1.75 }}>
+                        수강신청 시 입력하신 개인정보(이름, 연락처, 학교 등)는 수업 운영 및 안내 목적으로만 사용되며, 제3자에게 제공되지 않습니다.
+                      </div>
+                    </div>
+                  )
+              }
 
               <div style={{ background: '#fff', border: '1px solid #c8d0dc', borderRadius: 14, padding: 20, marginBottom: 12, boxShadow: '0 1px 4px rgba(0,55,112,0.05)' }}>
                 <div style={{ fontSize: 12, color: '#8c959f', fontWeight: 600, marginBottom: 6 }}>Q1 · 필수</div>
