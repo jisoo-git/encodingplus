@@ -295,7 +295,7 @@ export default function Apply() {
                 <div style={{ fontSize: 16, fontWeight: 700, color: '#18181b', marginBottom: 14 }}>원하시는 수업을 선택해주세요</div>
                 {[
                   { name: '입시 단기특강', desc: '특별전형 + 일반전형 병행 · 토요일 6h + 수요일 1h' },
-                  { name: '인성면접 강화', desc: '면접·자기소개서 집중 · 모의면접 반복 훈련' },
+                  { name: '일반전형 특강', desc: '면접·자기소개서 집중 · 인성면접 강화' },
                 ].map(opt => (
                   <button key={opt.name} type="button" onClick={() => setCourse(opt.name)}
                     style={{
