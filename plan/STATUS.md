@@ -67,15 +67,19 @@
 - [x] `banners`: `image?` 필드 추가
 
 ### Apply.tsx
-- [x] **Firestore 활성 폼 동적 연동** (`isActive: true` 폼 로드)
-- [x] 모든 질문 타입 렌더링 (short/long/radio/ox/checkbox/dropdown/date/number/omr/info)
-- [x] `findAnswer()`: 동적 답변에서 이름/학교/전화 추출 → AdminSubmissions 호환
+- [x] **섹션=스텝 완전 동적 연동**: FormBuilder 섹션 → 수강신청 스텝 1:1 매핑
+- [x] 하드코딩 Step1(개인정보/수업선택) · Step2(유의사항) 완전 제거
+- [x] info 타입 질문 → 공지 카드로 렌더 (배경 #eff6ff, 전체 label 표시)
+- [x] 필수 radio '아니오' 선택 시 경고 메시지 + Next 차단
+- [x] 스텝 인디케이터 섹션 제목 기반 동적 생성
+- [x] 제출: '수업'/'과목' 키워드로 course 추출, 이름/학교/연락처 keyword 추출
 
 ---
 
 ## 미완료 / 이어서 할 작업
 
 ### 기능 (우선순위 높음)
+- [ ] **수강신청 폼 세팅**: FormBuilder에서 3개 섹션(신청확인/유의사항/정보입력) 구성 필요 — 현재 폼 없으면 "준비 중" 표시
 - [ ] **폼 활성화 자동 비활성화**: 한 폼 활성화 시 나머지 자동 비활성화 미구현
 
 ### 기능 (우선순위 낮음)
