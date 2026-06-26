@@ -51,7 +51,7 @@ const WHY_CARDS = [
 
 const COURSES_PREVIEW = [
   { tag: 'COURSE 01', name: '입시 단기특강', sub: '특별전형 + 일반전형 병행 · 16주', items: ['특전 실적물 제작', '코딩 수학 / 정보 교육', '자소서 · 면접 완성'], color: '#1d4ed8', bg: '#dbeafe' },
-  { tag: 'COURSE 02', name: '일반전형 특강', sub: '면접·자기소개서 집중 준비', items: ['인성면접 강화', '자기소개서 완성', '소질적성검사 대비'], color: '#1d4ed8', bg: '#eff6ff' },
+  { tag: 'COURSE 02', name: '일반전형 특강', sub: '면접·자기소개서 집중 준비 · 16주', items: ['인성면접 강화', '자기소개서 완성', '소질적성검사 대비'], color: '#1d4ed8', bg: '#eff6ff' },
 ]
 
 export default function Home() {

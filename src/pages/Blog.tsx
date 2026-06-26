@@ -101,7 +101,6 @@ function BlogCard({ post, onClick }: { post: Post; onClick: () => void }) {
         cursor: 'pointer',
         display: 'flex',
         flexDirection: 'column',
-        height: 320,
       }}
     >
       {/* 대표 이미지 — 고정 150px */}
@@ -193,7 +192,7 @@ export default function Blog() {
       <div className="blog-list-bottom" style={{ background: '#fff', padding: '14px 18px 0' }}>
         <div className="md:max-w-[1100px] md:mx-auto">
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3" style={{ gap: 14 }}>
+            <div className="grid grid-cols-1 md:grid-cols-3" style={{ gap: 14, gridAutoRows: '1fr' }}>
               <SkeletonCard /><SkeletonCard /><SkeletonCard />
             </div>
           ) : posts.length === 0 ? (
@@ -209,7 +208,7 @@ export default function Blog() {
                     <span style={{ fontSize: 13, fontWeight: 700, color: '#2563eb' }}>📌 고정 글</span>
                     <span style={{ fontSize: 12, color: '#a1a1aa' }}>{pinnedPosts.length}개</span>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3" style={{ gap: 14 }}>
+                  <div className="grid grid-cols-1 md:grid-cols-3" style={{ gap: 14, gridAutoRows: '1fr' }}>
                     {pinnedPosts.map(post => (
                       <div key={post.id} style={{ position: 'relative' }}>
                         <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 1, background: '#2563eb', borderRadius: 5, padding: '2px 6px', fontSize: 11 }}>📌</div>
@@ -225,7 +224,7 @@ export default function Blog() {
               {pinnedPosts.length > 0 && regularPosts.length > 0 && (
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#52525b', marginBottom: 12 }}>전체 글</div>
               )}
-              <div className="grid grid-cols-1 md:grid-cols-3" style={{ gap: 14 }}>
+              <div className="grid grid-cols-1 md:grid-cols-3" style={{ gap: 14, gridAutoRows: '1fr' }}>
                 {regularPosts.map(post => (
                   <BlogCard key={post.id} post={post} onClick={() => navigate(`/blog/${post.id}`)} />
                 ))}
