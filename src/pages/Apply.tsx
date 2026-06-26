@@ -53,9 +53,9 @@ export default function Apply() {
     fetchActiveForm()
   }, [])
 
-  // 유의사항 섹션 — 제목 '유의사항'인 섹션 (없으면 하드코딩 NOTICES 사용)
+  // 유의사항 섹션 — 제목 '유의사항'인 섹션의 info 타입 질문만 (없으면 하드코딩 NOTICES 사용)
   const noticesSection = activeForm?.sections.find(s => s.title === '유의사항') ?? null
-  const formNotices = noticesSection?.questions ?? []
+  const formNotices = (noticesSection?.questions ?? []).filter(q => q.type === 'info')
 
   // 선택된 수업명과 정확히 일치하는 섹션만 사용
   const courseSection = course
@@ -323,17 +323,23 @@ export default function Apply() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
                 {(formNotices.length > 0 ? formNotices : NOTICES).map((item, i) => {
                   const isForm = formNotices.length > 0
-                  const id = isForm ? (item as typeof formNotices[0]).id : (item as typeof NOTICES[0]).id
-                  const label = isForm ? (item as typeof formNotices[0]).label : (item as typeof NOTICES[0]).title
-                  const body = isForm ? null : (item as typeof NOTICES[0]).body
+                  const key = isForm ? (item as typeof formNotices[0]).id : (item as typeof NOTICES[0]).id
+                  const rawLabel = isForm ? (item as typeof formNotices[0]).label : ''
+                  const colonIdx = rawLabel.indexOf(':')
+                  const title = isForm
+                    ? (colonIdx > -1 ? rawLabel.slice(0, colonIdx).trim() : rawLabel)
+                    : (item as typeof NOTICES[0]).title
+                  const body = isForm
+                    ? (colonIdx > -1 ? rawLabel.slice(colonIdx + 1).trim() : null)
+                    : (item as typeof NOTICES[0]).body
                   return (
-                    <div key={id} style={{ background: '#fff', border: '1px solid #c8d0dc', borderRadius: 14, padding: 18, boxShadow: '0 1px 4px rgba(0,55,112,0.05)' }}>
+                    <div key={key} style={{ background: '#fff', border: '1px solid #c8d0dc', borderRadius: 14, padding: 18, boxShadow: '0 1px 4px rgba(0,55,112,0.05)' }}>
                       <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                         <span style={{ fontSize: 12, fontWeight: 700, color: '#1d4ed8', background: '#dbeafe', padding: '3px 8px', borderRadius: 6, flexShrink: 0, marginTop: 1 }}>
                           {String(i + 1).padStart(2, '0')}
                         </span>
                         <div>
-                          <div style={{ fontWeight: 700, fontSize: 14, color: '#18181b', marginBottom: body ? 4 : 0 }}>{label}</div>
+                          <div style={{ fontWeight: 700, fontSize: 14, color: '#18181b', marginBottom: body ? 4 : 0 }}>{title}</div>
                           {body && <div style={{ fontSize: 13, color: '#52525b', lineHeight: 1.6 }}>{body}</div>}
                         </div>
                       </div>

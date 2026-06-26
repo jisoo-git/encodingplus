@@ -52,7 +52,7 @@ const WHY_CARDS = [
 
 const COURSES_PREVIEW = [
   { tag: 'COURSE 01', name: '입시 단기특강', sub: '특별전형과 일반전형 모두 도전 · 16주', items: ['실적물 생산 · 이론 교육', '이산수학 · 정보 · 실전모의고사', '실적설명서 · 자소서 · 면접'], color: '#1d4ed8', bg: '#dbeafe' },
-  { tag: 'COURSE 02', name: '일반전형 특강', sub: '일반전형 집중 전략 · 16주', items: ['소질적성검사 대비', '이산수학 · 컴퓨터 교과', '인성 면접 대비'], color: '#1d4ed8', bg: '#eff6ff' },
+  { tag: 'COURSE 02', name: '일반전형 특강', sub: '일반전형 집중 전략 · 16주', items: ['소질적성검사 대비', '이산수학 · 컴퓨터 교과', '인성면접 강화'], color: '#1d4ed8', bg: '#eff6ff' },
 ]
 
 export default function Home() {
