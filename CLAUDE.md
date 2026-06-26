@@ -140,6 +140,17 @@ onBlur → borderColor #c8d0dc
 `banners.image`: 배경 이미지 URL (없으면 `bg` 그라데이션 사용)  
 `blogPosts.content`: **마크다운 문자열** (react-markdown으로 렌더링)
 
+## 이미지 관리 규칙
+
+이미지는 `public/` 폴더에 저장 → Firestore에 절대 경로로 입력. Vite가 루트로 서빙.
+
+| 용도 | 폴더 | Firestore 입력값 예시 |
+|------|------|----------------------|
+| 배너 배경 | `public/banners/` | `/banners/banner1.png` |
+| 블로그 대표 이미지 | `public/blog/` | `/blog/이미지명.jpg` |
+
+외부 URL(네이버 등)은 핫링크 차단으로 사용 불가.
+
 ---
 
 ## 주요 하드코딩 수치 (source/2027년도_특강안내.md 기준)
