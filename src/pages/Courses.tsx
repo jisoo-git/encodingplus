@@ -32,11 +32,6 @@ const TYPE_STYLE: Record<string, { color: string; bg: string }> = {
 }
 
 // ── 데이터 ────────────────────────────────────────────────────────
-const ADMISSION_INFO = [
-  { step: '특별전형', desc: '실적물·소질적성검사·자기소개서·면접으로 평가합니다. IT 실적 활동이 있는 학생에게 유리하며, 실적물 제작과 이론·논술을 종합 대비합니다.' },
-  { step: '일반전형', desc: '내신과 소질적성검사(C언어·정보소양·논리적사고)로 평가합니다. 코딩을 처음 시작하는 학생도 충분히 준비할 수 있습니다.' },
-  { step: '공통 사항', desc: '디미고는 전기학교로 전국 1곳만 지원 가능합니다. 두 전형에 동시 지원할 수 없으므로 지원 전형을 신중히 결정하세요.' },
-]
 
 const SECTIONS: CourseSection[] = [
   {
@@ -163,7 +158,7 @@ function CourseSheet({ course, onClose, navigate }: { course: Course; onClose: (
 
           {/* 상세 단락 */}
           {course.detail.map((para, i) => (
-            <p key={i} style={{ fontSize: 14.5, lineHeight: 1.8, color: '#3f3f46', margin: '14px 0 0' }}>{para}</p>
+            <div key={i} style={{ fontSize: 14.5, lineHeight: 1.8, color: '#3f3f46', marginTop: 10 }}>{para}</div>
           ))}
 
           {/* 수업 구성 */}
@@ -219,23 +214,6 @@ function CourseSheet({ course, onClose, navigate }: { course: Course; onClose: (
   )
 }
 
-// ── 섹션 헤더 ─────────────────────────────────────────────────────
-function SectionHeader({ title, desc, note }: { title: string; desc: string; note?: string }) {
-  return (
-    <div style={{ marginTop: 32, marginBottom: 14 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-        <span style={{ display: 'block', width: 5, height: 22, borderRadius: 3, background: '#2563eb', flexShrink: 0 }} />
-        <span style={{ fontSize: 21, fontWeight: 800, letterSpacing: '-0.02em', color: '#18181b' }}>{title}</span>
-      </div>
-      {desc && <div style={{ fontSize: 14, color: '#71717a', marginTop: 6, paddingLeft: 14 }}>{desc}</div>}
-      {note && (
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, margin: '10px 0 0 14px', background: '#dbeafe', color: '#1d4ed8', fontSize: 12.5, fontWeight: 700, padding: '7px 12px', borderRadius: 8 }}>
-          📅 {note}
-        </div>
-      )}
-    </div>
-  )
-}
 
 // ── 메인 ─────────────────────────────────────────────────────────
 export default function Courses() {
