@@ -158,7 +158,7 @@ function CourseSheet({ course, onClose, navigate }: { course: Course; onClose: (
 
           {/* 상세 단락 */}
           {course.detail.map((para, i) => (
-            <div key={i} style={{ fontSize: 14.5, lineHeight: 1.8, color: '#3f3f46', marginTop: 10 }}>{para}</div>
+            <div key={i} style={{ fontSize: 14.5, lineHeight: 1.8, color: '#3f3f46' }}>{para}</div>
           ))}
 
           {/* 수업 구성 */}
