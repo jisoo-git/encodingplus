@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 // ── 타입 ─────────────────────────────────────────────────────────
@@ -7,7 +6,7 @@ type TimeSlot = { d: string; h: string; n: string }
 
 interface Course {
   id: string
-  types: string[]           // ['특별전형'] | ['일반전형'] | ['특별전형', '일반전형']
+  types: string[]
   name: string
   sub: string
   areas: Area[]
@@ -19,8 +18,6 @@ interface Course {
 
 interface CourseSection {
   id: string
-  title: string
-  desc: string
   note?: string
   courses: Course[]
 }
@@ -32,10 +29,9 @@ const TYPE_STYLE: Record<string, { color: string; bg: string }> = {
 }
 
 // ── 데이터 ────────────────────────────────────────────────────────
-
 const SECTIONS: CourseSection[] = [
   {
-    id: 'dimigo', title: '디미고', desc: '',
+    id: 'dimigo',
     note: '2027학년도 정규 과정 · 7월 18일 개강',
     courses: [
       {
@@ -78,147 +74,95 @@ const SECTIONS: CourseSection[] = [
   },
 ]
 
-// ── 타입 뱃지 ─────────────────────────────────────────────────────
-function TypeBadges({ types }: { types: string[] }) {
+// ── CourseFullCard ─────────────────────────────────────────────────
+function CourseFullCard({ course, navigate }: { course: Course; navigate: (p: string) => void }) {
   return (
-    <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 10 }}>
-      {types.map(t => {
-        const s = TYPE_STYLE[t]
-        if (!s) return null
-        return (
-          <span key={t} style={{ display: 'inline-block', fontSize: 12, fontWeight: 700, color: s.color, background: s.bg, padding: '4px 10px', borderRadius: 6 }}>
-            {t}
-          </span>
-        )
-      })}
-    </div>
-  )
-}
+    <div style={{ background: '#fff', border: '1px solid #d6dde5', borderRadius: 20, overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,55,112,0.08)' }}>
 
-// ── CourseCard ────────────────────────────────────────────────────
-function CourseCard({ course, onClick }: { course: Course; onClick: () => void }) {
-  return (
-    <div
-      onClick={onClick}
-      className="hover-card"
-      style={{
-        background: '#fff',
-        border: '1px solid #d6dde5',
-        borderRadius: 16,
-        padding: 20,
-        cursor: 'pointer',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.07)',
-      }}
-    >
-      <TypeBadges types={course.types} />
-      <div style={{ fontSize: 18, fontWeight: 800, color: '#18181b', letterSpacing: '-0.02em' }}>{course.name}</div>
-      <div style={{ fontSize: 13.5, color: '#52525b', marginTop: 5 }}>{course.sub}</div>
-
-      <div style={{ fontWeight: 800, fontSize: 13, color: '#18181b', marginTop: 18, marginBottom: 2 }}>수업 구성</div>
-      {course.areas.map(ar => (
-        <div key={ar.k} style={{ display: 'flex', gap: 12, padding: '10px 0', borderTop: '1px solid #ebebeb' }}>
-          <div style={{ flexShrink: 0, width: 68, fontWeight: 700, fontSize: 13, color: '#18181b' }}>{ar.k}</div>
-          <div style={{ fontSize: 13, color: '#52525b' }}>{ar.v}</div>
+      {/* 상단 — 이름·뱃지·설명 */}
+      <div style={{ padding: '24px 24px 20px' }}>
+        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 12 }}>
+          {course.types.map(t => {
+            const s = TYPE_STYLE[t]
+            if (!s) return null
+            return (
+              <span key={t} style={{ fontSize: 12, fontWeight: 700, color: s.color, background: s.bg, padding: '4px 10px', borderRadius: 6 }}>
+                {t}
+              </span>
+            )
+          })}
         </div>
-      ))}
-
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4, marginTop: 14, color: '#2563eb', fontSize: 13, fontWeight: 700 }}>
-        수업시간 · 상세 보기 →
+        <div style={{ fontSize: 22, fontWeight: 800, color: '#18181b', letterSpacing: '-0.02em' }}>{course.name}</div>
+        <div style={{ fontSize: 14, color: '#52525b', marginTop: 4, marginBottom: 14 }}>{course.sub}</div>
+        {course.detail.map((para, i) => (
+          <div key={i} style={{ fontSize: 14, lineHeight: 1.75, color: '#3f3f46' }}>{para}</div>
+        ))}
       </div>
-    </div>
-  )
-}
 
-// ── CourseSheet ───────────────────────────────────────────────────
-function CourseSheet({ course, onClose, navigate }: { course: Course; onClose: () => void; navigate: (p: string) => void }) {
-  useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = '' }
-  }, [])
+      {/* 구분선 */}
+      <div style={{ borderTop: '1px solid #ececef' }} />
 
-  return (
-    <div className="course-sheet-overlay" onClick={onClose}>
-      <div className="course-sheet-panel" onClick={e => e.stopPropagation()}>
-
-        {/* sticky 핸들 */}
-        <div style={{ position: 'sticky', top: 0, background: '#fff', paddingTop: 8, zIndex: 1 }}>
-          <div style={{ width: 42, height: 5, background: '#d1d5db', borderRadius: 999, margin: '0 auto' }} />
-        </div>
-
-        <div style={{ padding: '16px 22px 28px' }}>
-
-          {/* 뱃지 + × 닫기 */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
-            <TypeBadges types={course.types} />
-            <button onClick={onClose} style={{ flexShrink: 0, background: '#f4f4f6', border: 'none', width: 32, height: 32, borderRadius: 8, fontSize: 16, color: '#52525b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+      {/* 수업 구성 */}
+      <div style={{ padding: '20px 24px' }}>
+        <div style={{ fontSize: 13, fontWeight: 800, color: '#18181b', marginBottom: 10 }}>수업 구성</div>
+        {course.areas.map((ar, i) => (
+          <div key={ar.k} style={{ display: 'flex', gap: 14, padding: '10px 0', borderTop: i === 0 ? '1px solid #ebebeb' : '1px solid #ebebeb' }}>
+            <div style={{ flexShrink: 0, width: 76, fontWeight: 700, fontSize: 13, color: '#18181b' }}>{ar.k}</div>
+            <div style={{ fontSize: 13, color: '#52525b' }}>{ar.v}</div>
           </div>
+        ))}
+      </div>
 
-          <div style={{ fontSize: 22, fontWeight: 800, color: '#18181b', letterSpacing: '-0.02em' }}>{course.name}</div>
-          <div style={{ fontSize: 14, color: '#52525b', marginTop: 5 }}>{course.sub}</div>
+      {/* 구분선 */}
+      <div style={{ borderTop: '1px solid #ececef' }} />
 
-          {/* 상세 단락 */}
-          {course.detail.map((para, i) => (
-            <div key={i} style={{ fontSize: 14.5, lineHeight: 1.8, color: '#3f3f46' }}>{para}</div>
-          ))}
-
-          {/* 수업 구성 */}
-          <div style={{ fontWeight: 800, fontSize: 14, color: '#18181b', marginTop: 24, paddingBottom: 8, borderBottom: '2px solid #18181b' }}>수업 구성</div>
-          {course.areas.map(ar => (
-            <div key={ar.k} style={{ display: 'flex', gap: 14, padding: '12px 0', borderBottom: '1px solid #ebebeb' }}>
-              <div style={{ flexShrink: 0, width: 72, fontWeight: 700, fontSize: 14, color: '#18181b' }}>{ar.k}</div>
-              <div style={{ fontSize: 14, color: '#52525b' }}>{ar.v}</div>
-            </div>
-          ))}
-
-          {/* 수업 시간 */}
-          <div style={{ fontWeight: 800, fontSize: 14, color: '#18181b', marginTop: 24, paddingBottom: 8, borderBottom: '2px solid #18181b' }}>수업 시간</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
-            {course.times.map(t => (
-              <div key={t.d} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f6f8fa', border: '1px solid #dde3ea', borderRadius: 12, padding: '14px 18px' }}>
-                <div>
-                  <div style={{ fontSize: 13, color: '#52525b', fontWeight: 600 }}>{t.d}</div>
-                  <div style={{ fontSize: 11, color: '#8c959f', marginTop: 3 }}>{t.n}</div>
-                </div>
-                <div style={{ fontSize: 15, fontWeight: 800, color: '#18181b' }}>{t.h}</div>
+      {/* 수업 시간 */}
+      <div style={{ padding: '20px 24px' }}>
+        <div style={{ fontSize: 13, fontWeight: 800, color: '#18181b', marginBottom: 10 }}>수업 시간</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {course.times.map(t => (
+            <div key={t.d} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f6f8fa', border: '1px solid #dde3ea', borderRadius: 12, padding: '12px 16px' }}>
+              <div>
+                <div style={{ fontSize: 13, color: '#52525b', fontWeight: 600 }}>{t.d}</div>
+                <div style={{ fontSize: 11, color: '#8c959f', marginTop: 2 }}>{t.n}</div>
               </div>
-            ))}
-          </div>
-
-          {/* 수강료 — 상세에서만 */}
-          {course.price && (
-            <div style={{ marginTop: 12, padding: '14px 18px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 13, color: '#1d4ed8', fontWeight: 700 }}>월 수강료</span>
-              <span style={{ fontSize: 18, fontWeight: 800, color: '#18181b' }}>{course.price}</span>
+              <div style={{ fontSize: 15, fontWeight: 800, color: '#18181b' }}>{t.h}</div>
             </div>
-          )}
-
-          {/* CTA */}
-          {course.phoneOnly ? (
-            <a
-              href="tel:01028382391"
-              style={{ display: 'block', marginTop: 20, background: '#2563eb', color: '#fff', borderRadius: 11, padding: '15px 0', fontWeight: 700, fontSize: 15, textAlign: 'center', textDecoration: 'none', boxSizing: 'border-box' }}
-            >
-              전화 상담하기 · 010-2838-2391
-            </a>
-          ) : (
-            <button
-              onClick={() => { onClose(); navigate('/apply') }}
-              style={{ marginTop: 20, width: '100%', background: '#2563eb', border: 'none', color: '#fff', borderRadius: 11, padding: '15px 0', fontWeight: 700, fontSize: 15, cursor: 'pointer' }}
-            >
-              수강 신청하기
-            </button>
-          )}
+          ))}
         </div>
+      </div>
+
+      {/* 수강료 + CTA */}
+      <div style={{ padding: '0 24px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {course.price && (
+          <div style={{ padding: '14px 18px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 13, color: '#1d4ed8', fontWeight: 700 }}>월 수강료</span>
+            <span style={{ fontSize: 18, fontWeight: 800, color: '#18181b' }}>{course.price}</span>
+          </div>
+        )}
+        {course.phoneOnly ? (
+          <a
+            href="tel:01028382391"
+            style={{ display: 'block', background: '#2563eb', color: '#fff', borderRadius: 11, padding: '15px 0', fontWeight: 700, fontSize: 15, textAlign: 'center', textDecoration: 'none' }}
+          >
+            전화 상담하기 · 010-2838-2391
+          </a>
+        ) : (
+          <button
+            onClick={() => navigate('/apply')}
+            style={{ width: '100%', background: '#2563eb', border: 'none', color: '#fff', borderRadius: 11, padding: '15px 0', fontWeight: 700, fontSize: 15, cursor: 'pointer' }}
+          >
+            수강 신청하기
+          </button>
+        )}
       </div>
     </div>
   )
 }
-
 
 // ── 메인 ─────────────────────────────────────────────────────────
 export default function Courses() {
   const navigate = useNavigate()
-  const [openCourse, setOpenCourse] = useState<Course | null>(null)
 
   return (
     <div>
@@ -232,7 +176,7 @@ export default function Courses() {
         </div>
       </div>
 
-      {/* ── 수업 카드 — 2열 그리드 ── */}
+      {/* ── 수업 카드 ── */}
       <div style={{ padding: '8px 18px 0' }}>
         <div className="md:max-w-[1100px] md:mx-auto">
           {SECTIONS.map(sec => (
@@ -242,9 +186,9 @@ export default function Courses() {
                   📅 {sec.note}
                 </div>
               )}
-              <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 14 }}>
+              <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 16, alignItems: 'start' }}>
                 {sec.courses.map(c => (
-                  <CourseCard key={c.id} course={c} onClick={() => setOpenCourse(c)} />
+                  <CourseFullCard key={c.id} course={c} navigate={navigate} />
                 ))}
               </div>
             </div>
@@ -254,7 +198,7 @@ export default function Courses() {
       </div>
 
       {/* ── 하단 CTA ── */}
-      <div className="dark-cta-bottom" style={{ background: '#18181b', padding: '32px 20px 0', textAlign: 'center' }}>
+      <div style={{ background: '#18181b', padding: '32px 20px 0', textAlign: 'center' }}>
         <div className="md:max-w-[600px] md:mx-auto">
           <div style={{ fontSize: 20, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>지금 바로 수강 신청하세요</div>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', marginTop: 6, lineHeight: 1.6 }}>입시 상담 문의 010-2838-2391</div>
@@ -276,9 +220,6 @@ export default function Courses() {
         </div>
       </div>
 
-      {openCourse && (
-        <CourseSheet course={openCourse} onClose={() => setOpenCourse(null)} navigate={navigate} />
-      )}
     </div>
   )
 }
