@@ -31,7 +31,10 @@ const LINK_OPTIONS = [
   { value: '/apply', label: '수강 신청 (/apply)', cta: '수강 신청하기' },
   { value: '/courses', label: '수업 소개 (/courses)', cta: '수업 보기' },
   { value: '/blog', label: '블로그 (/blog)', cta: '블로그 보기' },
+  { value: '__custom__', label: '직접 입력 (외부 URL 포함)', cta: '' },
 ]
+
+const isCustomLink = (link: string) => !['', '/apply', '/courses', '/blog'].includes(link)
 
 export default function AdminBanners() {
   const [banners, setBanners] = useState<Banner[]>([])
@@ -393,29 +396,44 @@ export default function AdminBanners() {
                 <div>
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#52525b', marginBottom: 8 }}>버튼 링크</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    {LINK_OPTIONS.map(opt => (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => setForm(f => ({ ...f, link: opt.value, cta: opt.cta }))}
-                        style={{
-                          display: 'flex', alignItems: 'center', gap: 12,
-                          padding: '12px 14px', borderRadius: 10, textAlign: 'left',
-                          border: form.link === opt.value ? '2px solid #2563eb' : '1px solid #c8d0dc',
-                          background: form.link === opt.value ? '#dbeafe' : '#fff',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <div style={{
-                          width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
-                          border: form.link === opt.value ? '5px solid #2563eb' : '2px solid #d4d4d8',
-                          background: '#fff',
-                        }} />
-                        <span style={{ fontSize: 13, fontWeight: form.link === opt.value ? 700 : 500, color: form.link === opt.value ? '#1d4ed8' : '#52525b' }}>
-                          {opt.label}
-                        </span>
-                      </button>
-                    ))}
+                    {LINK_OPTIONS.map(opt => {
+                      const isCustom = opt.value === '__custom__'
+                      const selected = isCustom ? isCustomLink(form.link) : form.link === opt.value
+                      return (
+                        <div key={opt.value}>
+                          <button
+                            type="button"
+                            onClick={() => setForm(f => ({ ...f, link: isCustom ? '' : opt.value, cta: isCustom ? f.cta : opt.cta }))}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: 12, width: '100%',
+                              padding: '12px 14px', borderRadius: 10, textAlign: 'left',
+                              border: selected ? '2px solid #2563eb' : '1px solid #c8d0dc',
+                              background: selected ? '#dbeafe' : '#fff',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <div style={{
+                              width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
+                              border: selected ? '5px solid #2563eb' : '2px solid #d4d4d8',
+                              background: '#fff',
+                            }} />
+                            <span style={{ fontSize: 13, fontWeight: selected ? 700 : 500, color: selected ? '#1d4ed8' : '#52525b' }}>
+                              {opt.label}
+                            </span>
+                          </button>
+                          {isCustom && selected && (
+                            <input
+                              value={form.link}
+                              onChange={e => setForm(f => ({ ...f, link: e.target.value }))}
+                              placeholder="https://forms.gle/... 또는 /경로"
+                              style={{ marginTop: 6, width: '100%', border: '1px solid #c8d0dc', borderRadius: 8, padding: '10px 12px', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                              onFocus={e => { e.target.style.borderColor = '#2563eb' }}
+                              onBlur={e => { e.target.style.borderColor = '#c8d0dc' }}
+                            />
+                          )}
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
 
