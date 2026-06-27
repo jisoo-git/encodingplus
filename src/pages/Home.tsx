@@ -356,7 +356,7 @@ export default function Home() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 18 }}>
             <div>
               <div style={{ width: 28, height: 3, background: '#2563eb', borderRadius: 999, marginBottom: 10 }} />
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#2563eb', letterSpacing: '0.1em', marginBottom: 4 }}>OPEN HOUSE</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#2563eb', letterSpacing: '0.1em', marginBottom: 4 }}>PRESENTATION</div>
               <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.03em', color: '#18181b' }}>설명회</div>
             </div>
           </div>
