@@ -153,30 +153,13 @@ components:
     height: 64px
     borderTop: "1px solid {colors.border}"
     mobileOnly: true
-  button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button}"
-    rounded: "{rounded.md}"
-    padding: "9px 18px"
-  button-primary-disabled:
-    backgroundColor: "{colors.primary-disabled}"
-    textColor: "{colors.on-primary}"
-    rounded: "{rounded.md}"
-    cursor: not-allowed
-  button-secondary:
-    backgroundColor: "{colors.surface-alt}"
-    textColor: "{colors.body}"
-    typography: "{typography.button-sm}"
-    rounded: "{rounded.sm}"
-    padding: "9px 16px"
-  button-danger:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.danger}"
-    typography: "{typography.button-sm}"
-    rounded: "{rounded.sm}"
-    border: "1px solid {colors.danger-bg}"
-    padding: "9px 12px"
+  button:
+    note: "스타일 결정은 의도→계층→컨텍스트 원칙으로. 컴포넌트 섹션 참조."
+    cta:        { bg: "{colors.primary}",          text: "#fff",               border: "none",                      radius: "{rounded.md}" }
+    secondary:  { bg: "{colors.surface-alt}",      text: "{colors.body}",      border: "none",                      radius: "{rounded.sm}" }
+    danger:     { bg: "{colors.canvas}",           text: "{colors.danger}",    border: "1px solid {colors.danger-bg}", radius: "{rounded.sm}" }
+    choice:     { bg: "{colors.primary-lightest}", text: "{colors.primary-dark}", border: "1px solid {colors.primary-border}", radius: "{rounded.md}" }
+    disabled:   { bg: "{colors.primary-disabled}", text: "#fff",               border: "none",                      radius: "{rounded.md}" }
   card:
     backgroundColor: "{colors.canvas}"
     border: "1px solid {colors.border}"
@@ -405,15 +388,32 @@ Fallback: `-apple-system, BlinkMacSystemFont, sans-serif`.
 
 ### 버튼
 
-**`button-primary`** — 기본 CTA. 배경 `{colors.primary}`, 텍스트 `{colors.on-primary}`, `{typography.button}`, padding 9px×18px, `{rounded.md}` (10px). hover: `hover-btn` 클래스 (brightness 0.9 + translateY -1px).
+버튼 스타일은 **의도 → 계층 → 컨텍스트** 세 축으로 결정한다. 이름으로 외우지 말고 아래 원칙으로 판단할 것.
 
-**`button-primary-disabled`** — 비활성 상태. 배경 `{colors.primary-disabled}` (#bfdbfe), 텍스트 흰색, cursor not-allowed. 파란 계열 유지 — 회색으로 바꾸지 않음.
+**1단계 — 의도: 이 버튼이 무엇을 하는가**
+- 페이지·플로우의 핵심 행동 유도 → **파란 채움 CTA**
+- 취소·닫기·덜 중요한 보조 액션 → **회색 채움**
+- 되돌릴 수 없는 삭제·위험 → **빨간 테두리**
 
-**`button-secondary`** — 보조 액션. 배경 `{colors.surface-alt}` (#f4f4f6), 텍스트 `{colors.body}`, `{typography.button-sm}`, `{rounded.sm}`.
+**2단계 — 계층: 같은 공간에 버튼이 여러 개인가**
+- 주/보조 구분이 명확함 → 주 버튼은 파란 CTA, 보조는 회색
+- **동등한 선택지(택일)** → 모두 같은 스타일. primary + secondary 혼용 금지 — 한쪽이 이미 선택된 것처럼 보임
+- 동등 선택지 스타일: 배경 `{colors.primary-lightest}`, 테두리 `1px {colors.primary-border}`, 텍스트 `{colors.primary-dark}`, `{rounded.md}`
 
-**`button-danger`** — 삭제·위험. 배경 흰색, 텍스트 `{colors.danger}`, 테두리 `1px {colors.danger-bg}`, `{rounded.sm}`.
+**3단계 — 컨텍스트: 어디에 올라가는가**
+- 밝은 배경(일반) → 위 원칙 그대로
+- 어두운 배경(배너 등) → 역전: 흰 배경 + `{colors.ink}` 텍스트
+- 비활성 상태 → `{colors.primary-disabled}` (#bfdbfe) 채움. 회색으로 바꾸지 않음 — 파란 계열 유지
 
-**`button-choice`** — 동등한 두 선택지 버튼 (택일 UI). 배경 `{colors.primary-lightest}` (#eff6ff), 테두리 `1px {colors.primary-border}` (#bfdbfe), 텍스트 `{colors.primary-dark}` (#1d4ed8), `{rounded.md}`. 두 버튼 모두 동일한 스타일 — primary/secondary 계층 금지 (하나가 이미 선택된 것처럼 보임).
+**스타일 참조값:**
+
+| 상황 | 배경 | 텍스트 | 테두리 | radius |
+|------|------|--------|--------|--------|
+| 핵심 CTA | `{colors.primary}` | `#fff` | 없음 | `{rounded.md}` |
+| 보조 액션 | `{colors.surface-alt}` | `{colors.body}` | 없음 | `{rounded.sm}` |
+| 삭제·위험 | `#fff` | `{colors.danger}` | `1px {colors.danger-bg}` | `{rounded.sm}` |
+| 동등 선택지 | `{colors.primary-lightest}` | `{colors.primary-dark}` | `1px {colors.primary-border}` | `{rounded.md}` |
+| 비활성 | `{colors.primary-disabled}` | `#fff` | 없음 | `{rounded.md}` |
 
 ### 카드
 
@@ -436,13 +436,18 @@ Fallback: `-apple-system, BlinkMacSystemFont, sans-serif`.
 
 ### 뱃지 / 태그
 
-**`badge-blue`** — 기본 파란 뱃지. 배경 `{colors.primary-light}`, 텍스트 `{colors.primary-dark}`, `{rounded.xs}` (6px), padding 2px×8px, 11px/700.
+뱃지 색은 **표현하려는 의미(상태·카테고리·중립)** 로 결정한다.
 
-**`badge-success`** — 상담완료, 활성. 배경 `{colors.success-bg}`, 텍스트 `{colors.success}`.
+| 의미 | 배경 | 텍스트 | 사용 예 |
+|------|------|--------|--------|
+| 정보·카테고리 | `{colors.primary-light}` | `{colors.primary-dark}` | 폼 타입, 일반 라벨 |
+| 성공·완료 | `{colors.success-bg}` | `{colors.success}` | 상담완료, 활성 토글 |
+| 주의·대기 | `{colors.warning-bg}` | `{colors.warning-text}` | 새 신청 |
+| 위험·오류 | `{colors.danger-bg}` | `{colors.danger}` | 삭제, 오류 상태 |
 
-**`badge-warning`** — 새 신청. 배경 `{colors.warning-bg}`, 텍스트 `{colors.warning-text}` (노란-갈색 계열).
+공통 스타일: `{rounded.xs}` (6px), padding 2px×8px, 11px/700.
 
-**`hashtag-pill`** — 블로그 태그. 배경 `{colors.primary-light}`, 텍스트 `{colors.primary}`, `{rounded.pill}` (999px), padding 4px×12px, 12px/700.
+**`hashtag-pill`** — 태그·해시태그 전용. 배경 `{colors.primary-light}`, 텍스트 `{colors.primary}`, `{rounded.pill}` (999px), padding 4px×12px, 12px/700.
 
 ### 인풋
 
