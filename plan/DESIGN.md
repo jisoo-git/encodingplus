@@ -413,6 +413,8 @@ Fallback: `-apple-system, BlinkMacSystemFont, sans-serif`.
 
 **`button-danger`** — 삭제·위험. 배경 흰색, 텍스트 `{colors.danger}`, 테두리 `1px {colors.danger-bg}`, `{rounded.sm}`.
 
+**`button-choice`** — 동등한 두 선택지 버튼 (택일 UI). 배경 `{colors.primary-lightest}` (#eff6ff), 테두리 `1px {colors.primary-border}` (#bfdbfe), 텍스트 `{colors.primary-dark}` (#1d4ed8), `{rounded.md}`. 두 버튼 모두 동일한 스타일 — primary/secondary 계층 금지 (하나가 이미 선택된 것처럼 보임).
+
 ### 카드
 
 **`card`** — 기본 카드. 배경 `{colors.canvas}`, 테두리 `1px {colors.border}`, `{rounded.card}` (16px). `hover-card` 클래스로 hover 효과: 파란 섀도우 + -2px 부상. 섀도우 색: `rgba(37,99,235,0.13)`.

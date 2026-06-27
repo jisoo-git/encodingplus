@@ -96,7 +96,7 @@ export default function BottomNav() {
                 onClick={() => { setShowSheet(false); navigate('/apply') }}
                 style={{
                   width: '100%', padding: '16px', borderRadius: 12,
-                  background: '#2563eb', border: 'none', color: '#fff',
+                  background: '#eff6ff', border: '1px solid #bfdbfe', color: '#1d4ed8',
                   fontSize: 15, fontWeight: 700, cursor: 'pointer',
                   textAlign: 'left',
                 }}
@@ -108,7 +108,7 @@ export default function BottomNav() {
                 onClick={() => { setShowSheet(false); navigate('/apply?type=seminar') }}
                 style={{
                   width: '100%', padding: '16px', borderRadius: 12,
-                  background: '#f4f4f6', border: 'none', color: '#52525b',
+                  background: '#eff6ff', border: '1px solid #bfdbfe', color: '#1d4ed8',
                   fontSize: 15, fontWeight: 700, cursor: 'pointer',
                   textAlign: 'left',
                 }}
