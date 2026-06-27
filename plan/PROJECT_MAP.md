@@ -77,7 +77,7 @@
 | 파일 | 역할 |
 |------|------|
 | `Home.tsx` | 홈 — 배너 슬라이더(Firestore/FALLBACK), Stats, WHY 섹션, 개설강좌 2개 미리보기, 다크 CTA |
-| `Courses.tsx` | 수업소개 — 전형안내, 섹션별 코스카드(디미고/특성화고/국어논술), 바텀시트 상세, 다크 CTA |
+| `Courses.tsx` | 수업소개 — CourseFullCard 전면 표시(상세설명·수업구성·수업시간·수강료·CTA), 다크 CTA |
 | `Apply.tsx` | 수강신청 — Firestore 활성 폼 로드, 스텝별 폼 렌더, 제출 |
 | `Blog.tsx` | 블로그 목록 — 카드 그리드(gridAutoRows 1fr, height 100%), 고정글 별도 섹션, FALLBACK_POSTS 내보냄 |
 | `BlogPost.tsx` | 블로그 상세 — 대표이미지, 해시태그pill, 본문 마크다운 렌더(react-markdown), 밝은 CTA |
@@ -114,9 +114,19 @@
 | 경로 | 역할 |
 |------|------|
 | `PROJECT_MAP.md` | **이 파일** — 전체 파일 지도 |
-| `specs/COURSES_SPEC.md` | 수업소개 페이지 상세 스펙 (redesign 기준 레이아웃·데이터) |
+| `STATUS.md` | 작업 현황 — 완료/미완료 항목 추적 |
+| `DESIGN.md` | 디자인 지침서 — YAML 토큰 + 컴포넌트·색상·타이포 스펙 (BMW 스타일) |
+| `specs/COURSES_SPEC.md` | 수업소개 페이지 상세 스펙 |
 | `redesign/인코딩플러스.dc.html` | **디자인 목업 원본** — 모든 페이지의 참고 기준 |
-| `archive/` | 구 세션 노트·구 DESIGN*.md — 참고용만, 실제 개발 기준 아님 |
+
+---
+
+## scripts/
+
+| 파일 | 역할 |
+|------|------|
+| `resetEnrollmentForm.mjs` | Firestore 수강신청 폼 삭제 후 4섹션 구조로 재생성 |
+| `setInitialViews.mjs` | 블로그 포스트 초기 조회수 일괄 설정 |
 
 ---
 
@@ -135,7 +145,9 @@
 |------|------|
 | `icons/` | PWA 아이콘 (192×192, 512×512 등) |
 | `favicon.svg` | 파비콘 |
-| `banners/` | 배너 배경 이미지 (banner1.png, banner2.png 등) — AdminBanners에서 URL로 참조 |
+| `banners/` | 배너 배경 이미지 — Firestore `image` 필드에 `/banners/파일명` 으로 참조 |
+| `blog/` | 블로그 대표 이미지 — Firestore `coverImage` 필드에 `/blog/파일명` 으로 참조 |
+| `files/` | 다운로드 파일 (xlsx 등) — 마크다운에서 `/files/파일명` 으로 링크 |
 
 ---
 
