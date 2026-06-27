@@ -189,7 +189,7 @@ export default function Blog() {
       </div>
 
       {/* 목록 */}
-      <div className="blog-list-bottom" style={{ background: '#fff', padding: '14px 18px 0' }}>
+      <div className="blog-list-bottom" style={{ background: '#fff', padding: '14px 18px 32px' }}>
         <div className="md:max-w-[1100px] md:mx-auto">
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-3" style={{ gap: 14, gridAutoRows: '1fr' }}>
