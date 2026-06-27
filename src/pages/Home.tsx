@@ -11,10 +11,11 @@ interface Banner {
 
 
 const FALLBACK_BANNERS: Banner[] = [
-  { id: '1', badge: '디미고 합격률 1위', title: '9년 누적 212명 합격', sub: '특성화고 입시 전문, 인코딩플러스가 함께합니다.', bg: 'linear-gradient(135deg, #002B5C 0%, #2563eb 100%)', cta: '수업 보기', link: '/courses', order: 0 },
-  { id: '2', badge: '2026 디미고 입시 결과', title: '디미고 37명 합격', sub: '2025년 35명 · 2024년 37명 · 2023년 35명 합격', bg: 'linear-gradient(135deg, #001233 0%, #003580 100%)', cta: '합격 실적 보기', link: '/courses', order: 1 },
-  { id: '3', badge: '특성화고 전 전형 대비', title: '선린고 · 단소고 다수 합격', sub: '특별전형부터 일반전형까지 완벽 대비합니다.', bg: 'linear-gradient(135deg, #0f4c75 0%, #1b6ca8 100%)', cta: '전형 안내', link: '/courses', order: 2 },
-  { id: '4', badge: '입시 상담 문의', title: '010-2838-2391', sub: '지금 바로 1:1 입시 상담을 신청하세요.', bg: 'linear-gradient(135deg, #18181b 0%, #374151 100%)', cta: '수강 신청', link: '/apply', order: 3 },
+  { id: '1', image: '/banners/banner1.png', link: '/courses', badge: '', title: '', sub: '', bg: '#001233', cta: '', order: 0 },
+  { id: '2', image: '/banners/banner2.png', link: '/courses', badge: '', title: '', sub: '', bg: '#001233', cta: '', order: 1 },
+  { id: '3', image: '/banners/banner3.png', link: '/apply',   badge: '', title: '', sub: '', bg: '#001233', cta: '', order: 2 },
+  { id: '4', image: '/banners/banner4.png', link: '/apply',   badge: '', title: '', sub: '', bg: '#001233', cta: '', order: 3 },
+  { id: '5', image: '/banners/banner5.png', link: '/courses', badge: '', title: '', sub: '', bg: '#001233', cta: '', order: 4 },
 ]
 
 const STATS = [
