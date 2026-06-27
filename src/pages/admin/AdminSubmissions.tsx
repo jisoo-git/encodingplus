@@ -88,14 +88,14 @@ export default function AdminSubmissions() {
   }
 
   const statusKey = STATUS_MAP[statusFilter]
-  const filtered = submissions
-    .filter(s => !statusKey || s.status === statusKey)
-    .filter(s => !formFilter || s.formId === formFilter)
+  // 폼 필터 기준 서브셋 (상태 탭·카운트 모두 이 기준)
+  const formFiltered = submissions.filter(s => !formFilter || s.formId === formFilter)
+  const filtered = formFiltered.filter(s => !statusKey || s.status === statusKey)
 
   const counts = {
-    new: submissions.filter(s => s.status === 'new').length,
-    confirmed: submissions.filter(s => s.status === 'confirmed').length,
-    done: submissions.filter(s => s.status === 'done').length,
+    new:       formFiltered.filter(s => s.status === 'new').length,
+    confirmed: formFiltered.filter(s => s.status === 'confirmed').length,
+    done:      formFiltered.filter(s => s.status === 'done').length,
   }
 
   return (
@@ -105,8 +105,9 @@ export default function AdminSubmissions() {
       <div style={{ padding: '20px 18px 0', background: '#fff', borderBottom: '1px solid #e8eaed' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#2563eb', letterSpacing: '0.08em', marginBottom: 2 }}>ADMIN</div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: '#18181b' }}>신청현황</div>
+            <div style={{ width: 28, height: 3, background: '#2563eb', borderRadius: 999, marginBottom: 10 }} />
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#2563eb', letterSpacing: '0.06em' }}>SUBMISSIONS</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: '#18181b', marginTop: 2 }}>신청현황</div>
           </div>
           {/* 요약 카운트 */}
           <div style={{ display: 'flex', gap: 14, alignItems: 'center', paddingTop: 6 }}>
@@ -135,14 +136,20 @@ export default function AdminSubmissions() {
 
         {/* 상태 탭 */}
         <div style={{ display: 'flex', gap: 0 }}>
-          {STATUS_TABS.map(tab => (
-            <button key={tab} onClick={() => setStatusFilter(tab)} style={{
-              flex: 1, padding: '10px 4px', border: 'none', background: 'none', cursor: 'pointer',
-              fontSize: 13, fontWeight: 600,
-              color: statusFilter === tab ? '#2563eb' : '#8c959f',
-              borderBottom: statusFilter === tab ? '2px solid #2563eb' : '2px solid transparent',
-            }}>{tab}</button>
-          ))}
+          {STATUS_TABS.map(tab => {
+            const key = STATUS_MAP[tab]
+            const cnt = key ? counts[key as keyof typeof counts] : formFiltered.length
+            return (
+              <button key={tab} onClick={() => setStatusFilter(tab)} style={{
+                flex: 1, padding: '10px 4px', border: 'none', background: 'none', cursor: 'pointer',
+                fontSize: 13, fontWeight: 600,
+                color: statusFilter === tab ? '#2563eb' : '#8c959f',
+                borderBottom: statusFilter === tab ? '2px solid #2563eb' : '2px solid transparent',
+              }}>
+                {tab}<span style={{ fontSize: 11, marginLeft: 3, opacity: 0.75 }}>{cnt}</span>
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -156,12 +163,14 @@ export default function AdminSubmissions() {
           <div style={{ background: '#fff' }}>
             {filtered.map((sub, i) => {
               const sc = STATUS_COLOR[sub.status] ?? STATUS_COLOR.new
-              const displayName = sub.name || '—'
+              const detailName = Object.entries(sub.detail || {}).find(([k]) => ['이름', '성명'].some(kw => k.includes(kw)))?.[1] as string | undefined
+              const displayName = sub.name || detailName || '—'
               const displaySub = sub.course || sub.formTitle || ''
               return (
                 <div
                   key={sub.id}
                   onClick={() => setSelected(sub)}
+                  className="submission-row"
                   style={{
                     display: 'flex', alignItems: 'center', gap: 12,
                     padding: '14px 18px',
@@ -198,6 +207,8 @@ export default function AdminSubmissions() {
         </div>
       )}
 
+      <style>{`.submission-row:hover { background: #f6f9fc !important; }`}</style>
+
       {/* 상세 Bottom Sheet */}
       {selected && (
         <div className="course-sheet-overlay" style={{ zIndex: 60 }} onClick={() => setSelected(null)}>
@@ -214,6 +225,11 @@ export default function AdminSubmissions() {
                   <div style={{ fontSize: 13, color: '#8c959f', marginTop: 3 }}>
                     {[selected.school, formatDate(selected)].filter(Boolean).join(' · ')}
                   </div>
+                  {selected.phone && (
+                    <a href={`tel:${selected.phone}`} style={{ fontSize: 14, fontWeight: 700, color: '#2563eb', textDecoration: 'none', display: 'block', marginTop: 4 }}>
+                      {selected.phone}
+                    </a>
+                  )}
                 </div>
                 <button onClick={() => setSelected(null)} style={{ background: '#f4f4f6', border: 'none', borderRadius: 8, padding: '7px 12px', fontSize: 13, color: '#52525b', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>닫기</button>
               </div>
@@ -234,15 +250,14 @@ export default function AdminSubmissions() {
               {selected.detail && Object.keys(selected.detail).length > 0 ? (
                 <div style={{ marginBottom: 20 }}>
                   <div style={{ fontSize: 11, fontWeight: 700, color: '#8c959f', letterSpacing: '0.06em', marginBottom: 8 }}>응답 내용</div>
-                  <div style={{ border: '1px solid #e8eaed', borderRadius: 10, overflow: 'hidden' }}>
-                    {Object.entries(selected.detail).map(([key, val], i, arr) => {
+                  <div style={{ border: '1px solid #e8eaed', borderRadius: 10, overflow: 'hidden', display: 'grid', gridTemplateColumns: 'auto 1fr' }}>
+                    {Object.entries(selected.detail).flatMap(([key, val], i, arr) => {
                       const label = labelMap[key] ?? key
-                      return (
-                        <div key={key} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', borderBottom: i < arr.length - 1 ? '1px solid #f0f0f2' : 'none' }}>
-                          <div style={{ padding: '10px 12px', fontSize: 12, fontWeight: 700, color: '#71717a', background: '#f8f9fa', borderRight: '1px solid #e8eaed', whiteSpace: 'nowrap' }}>{label}</div>
-                          <div style={{ padding: '10px 12px', fontSize: 13, fontWeight: 500, color: '#18181b', wordBreak: 'break-all' }}>{String(val)}</div>
-                        </div>
-                      )
+                      const isLast = i === arr.length - 1
+                      return [
+                        <div key={`${key}-l`} style={{ padding: '10px 12px', fontSize: 12, fontWeight: 700, color: '#71717a', background: '#f8f9fa', borderRight: '1px solid #e8eaed', borderBottom: isLast ? 'none' : '1px solid #f0f0f2', whiteSpace: 'nowrap' }}>{label}</div>,
+                        <div key={`${key}-v`} style={{ padding: '10px 12px', fontSize: 13, fontWeight: 500, color: '#18181b', wordBreak: 'break-word', borderBottom: isLast ? 'none' : '1px solid #f0f0f2' }}>{String(val)}</div>,
+                      ]
                     })}
                   </div>
                 </div>

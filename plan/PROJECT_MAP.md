@@ -9,7 +9,7 @@
 
 | 파일 | 역할 |
 |------|------|
-| `CLAUDE.md` | **개발 규칙 단일 출처** — 색상/레이아웃/컴포넌트 패턴/자주 실수하는 것. Claude Code 세션마다 자동 로드. |
+| `CLAUDE.md` | **운영 규칙 단일 출처** — 기술 스택/배포/Firestore 스키마/연동 체크리스트/자주 실수하는 것. Claude Code 세션마다 자동 로드. |
 | `index.html` | Vite 진입점 (PWA manifest, 아이콘 링크) |
 | `vite.config.ts` | Vite 설정 (PWA 플러그인 포함) |
 | `package.json` | 의존성 목록 |
@@ -116,7 +116,8 @@
 | `PROJECT_MAP.md` | **이 파일** — 전체 파일 지도 |
 | `STATUS.md` | 작업 현황 — 완료/미완료 항목 추적 |
 | `DESIGN.md` | 디자인 지침서 — YAML 토큰 + 컴포넌트·색상·타이포 스펙 (BMW 스타일) |
-| `specs/COURSES_SPEC.md` | 수업소개 페이지 상세 스펙 |
+| `specs/COURSES_SPEC.md` | 수업소개 페이지 상세 스펙 (수업 데이터 단일 출처) |
+| `specs/BLOG_SPEC.md` | 블로그 페이지 상세 스펙 |
 | `redesign/인코딩플러스.dc.html` | **디자인 목업 원본** — 모든 페이지의 참고 기준 |
 
 ---
