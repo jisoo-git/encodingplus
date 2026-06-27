@@ -35,7 +35,6 @@ export default function Drawer({ open, onClose }: Props) {
         position: 'fixed', inset: 0, zIndex: 60,
         background: 'rgba(24,24,27,0.45)',
         display: 'flex', justifyContent: 'flex-end',
-        maxWidth: 440, margin: '0 auto',
         animation: 'drawerFadeIn 0.2s ease',
       }}
     >
