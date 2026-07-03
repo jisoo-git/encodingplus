@@ -38,7 +38,6 @@ const SECTIONS: CourseSection[] = [
       {
         id: 'd-special', types: ['특별전형', '일반전형'],
         name: '입시 단기특강', sub: '특별전형과 일반전형 모두 도전',
-        price: '73만원 / 월 · 4회 기준',
         areas: [
           { k: '코딩/콘텐츠', v: '실적물 생산, 이론 교육' },
           { k: '적성고사', v: '이산수학, 정보학습, 실전모의고사' },
@@ -56,7 +55,6 @@ const SECTIONS: CourseSection[] = [
       {
         id: 'd-general', types: ['일반전형'],
         name: '일반전형 특강', sub: '일반전형 집중 전략',
-        price: '48만원 / 월 · 4회 기준',
         areas: [
           { k: '적성(수학)', v: '이산수학을 바탕으로 수학 수업 진행' },
           { k: '정보(컴퓨터)', v: '컴퓨터 교과 내용과 상식 차원의 정보 수업이 진행' },
@@ -133,14 +131,8 @@ function CourseFullCard({ course, navigate }: { course: Course; navigate: (p: st
         </div>
       </div>
 
-      {/* 수강료 + CTA */}
+      {/* CTA */}
       <div style={{ padding: '0 24px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {course.price && (
-          <div style={{ padding: '14px 18px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 13, color: '#1d4ed8', fontWeight: 700 }}>월 수강료</span>
-            <span style={{ fontSize: 18, fontWeight: 800, color: '#18181b' }}>{course.price}</span>
-          </div>
-        )}
         {course.phoneOnly ? (
           <a
             href="tel:01028382391"
