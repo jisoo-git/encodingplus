@@ -42,10 +42,10 @@ export default function AdminLayout() {
         >
           <button
             onClick={() => navigate('/')}
-            style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: 2, padding: 0 }}
+            style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}
           >
+            <img src="/icon/incodingplus_logo.png" alt="" style={{ height: 28, width: 'auto' }} />
             <span style={{ fontWeight: 800, fontSize: 18, color: '#18181b', letterSpacing: '-0.03em' }}>인코딩플러스</span>
-            <span style={{ color: '#2563eb', fontSize: 18, fontWeight: 800 }}>+</span>
           </button>
           <span style={{ fontSize: 11, color: '#1d4ed8', background: '#dbeafe', padding: '3px 8px', borderRadius: 5, fontWeight: 700 }}>관리자</span>
         </header>
@@ -66,10 +66,10 @@ export default function AdminLayout() {
           {/* 로고 */}
           <button
             onClick={() => navigate('/')}
-            style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}
+            style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: 7, padding: 0 }}
           >
+            <img src="/icon/incodingplus_logo.png" alt="" style={{ height: 32, width: 'auto' }} />
             <span style={{ fontWeight: 800, fontSize: 21, color: '#18181b', letterSpacing: '-0.03em' }}>인코딩플러스</span>
-            <span style={{ color: '#2563eb', fontSize: 21, fontWeight: 800 }}>+</span>
             <span style={{ fontSize: 11, color: '#1d4ed8', background: '#dbeafe', padding: '3px 8px', borderRadius: 5, fontWeight: 700, marginLeft: 2 }}>관리자</span>
           </button>
 
