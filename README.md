@@ -74,4 +74,4 @@ export default defineConfig([
 
 ## 테스트
 
-수강료 수정 
+아이콘 수정
