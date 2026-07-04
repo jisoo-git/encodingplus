@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 const TABS = [
   { icon: '🏠', label: '홈', path: '/' },
@@ -12,6 +12,24 @@ export default function BottomNav() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const [showSheet, setShowSheet] = useState(false)
+  const [dragY, setDragY] = useState(0)
+  const touchStartY = useRef<number | null>(null)
+
+  const closeSheet = () => { setShowSheet(false); setDragY(0) }
+
+  const handleSheetTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY
+  }
+  const handleSheetTouchMove = (e: React.TouchEvent) => {
+    if (touchStartY.current === null) return
+    const diff = e.touches[0].clientY - touchStartY.current
+    if (diff > 0) setDragY(diff)
+  }
+  const handleSheetTouchEnd = () => {
+    if (dragY > 80) closeSheet()
+    else setDragY(0)
+    touchStartY.current = null
+  }
 
   const handleTabClick = (path: string) => {
     if (path === '/apply') {
@@ -69,7 +87,7 @@ export default function BottomNav() {
       {/* 신청 선택 시트 */}
       {showSheet && (
         <div
-          onClick={() => setShowSheet(false)}
+          onClick={closeSheet}
           style={{
             position: 'fixed', inset: 0, zIndex: 50,
             background: 'rgba(24,24,27,0.45)',
@@ -78,11 +96,16 @@ export default function BottomNav() {
         >
           <div
             onClick={e => e.stopPropagation()}
+            onTouchStart={handleSheetTouchStart}
+            onTouchMove={handleSheetTouchMove}
+            onTouchEnd={handleSheetTouchEnd}
             style={{
               width: '100%',
               background: '#fff',
               borderRadius: '20px 20px 0 0',
               padding: '20px 20px calc(24px + env(safe-area-inset-bottom, 0px))',
+              transform: `translateY(${dragY}px)`,
+              transition: dragY === 0 ? 'transform 0.25s ease' : 'none',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
