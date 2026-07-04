@@ -51,7 +51,10 @@ export default function Drawer({ open, onClose }: Props) {
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <span style={{ fontWeight: 800, fontSize: 17, color: '#18181b', letterSpacing: '-0.02em' }}>인코딩플러스<span style={{ color: '#2563eb' }}>+</span></span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <img src="/icon/incodingplus_logo.png" alt="" style={{ height: 26, width: 'auto' }} />
+            <span style={{ fontWeight: 800, fontSize: 17, color: '#18181b', letterSpacing: '-0.02em' }}>인코딩플러스</span>
+          </div>
           <button
             onClick={onClose}
             style={{ background: 'none', border: 'none', fontSize: 22, color: '#8c959f', lineHeight: 1, padding: 4, borderRadius: 6, cursor: 'pointer' }}

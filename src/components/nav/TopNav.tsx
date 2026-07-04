@@ -31,10 +31,10 @@ export default function TopNav({ onMenuOpen }: Props) {
       >
         <button
           onClick={() => navigate('/')}
-          style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: 2, padding: 0 }}
+          style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}
         >
+          <img src="/icon/incodingplus_logo.png" alt="" style={{ height: 28, width: 'auto' }} />
           <span style={{ fontWeight: 800, fontSize: 18, color: '#18181b', letterSpacing: '-0.03em' }}>인코딩플러스</span>
-          <span style={{ color: '#2563eb', fontSize: 18, fontWeight: 800 }}>+</span>
         </button>
         <button
           onClick={onMenuOpen}
@@ -67,10 +67,10 @@ export default function TopNav({ onMenuOpen }: Props) {
       >
         <button
           onClick={() => navigate('/')}
-          style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: 2, padding: 0 }}
+          style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: 7, padding: 0 }}
         >
+          <img src="/icon/incodingplus_logo.png" alt="" style={{ height: 32, width: 'auto' }} />
           <span style={{ fontWeight: 800, fontSize: 21, color: '#18181b', letterSpacing: '-0.03em' }}>인코딩플러스</span>
-          <span style={{ color: '#2563eb', fontSize: 21, fontWeight: 800 }}>+</span>
         </button>
         <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           {NAV_LINKS.map(link => {

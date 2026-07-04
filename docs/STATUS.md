@@ -10,13 +10,21 @@
   - 우상단 CTA 버튼: `b.cta` 텍스트가 있을 때만 표시, 클릭 시 `b.link`로 이동
     - 흰 배경 + 검정 텍스트 + 그림자, 반응형 크기 (`banner-cta-btn` 클래스)
     - 관리자 배너 편집에서 버튼 텍스트 직접 입력, 비워두면 버튼 없음
-  - 우하단: ‹ › 슬라이드 이동 버튼, 하단 도트 인디케이터
+  - 좌우 중앙: ‹ › 슬라이드 이동 버튼 (`banner-arrow` 클래스, 반투명 흰색, 데스크탑 48px / 모바일 32px)
+  - 우하단: 배너 카운터 (`{현재} / {전체}` 형식, 배너 이미지 위에 오버레이)
+  - 하단: 도트 인디케이터 (클릭으로 특정 배너 바로 이동)
+  - 스와이프: 터치(모바일) + 마우스 드래그(데스크탑) 모두 지원
   - FALLBACK_BANNERS: `/banners/banner1~5.png` 참조
 - **수업소개**: CourseFullCard 전면 표시, 카드 높이 행별 통일(flex stretch), 하단 CTA(DarkCTAFooter)
 - **수강신청**: enrollment 3-step 하드코딩 / 범용 폼 섹션별 step, branching(`__end__` 차단·섹션 점프), 제출 저장
 - **블로그**: 핀 고정글 상단 분리, 카드 그리드(`gridAutoRows: 1fr`), 마크다운 상세, 조회수 카운트, 하단 CTA(DarkCTAFooter)
 - **BottomNav 신청 탭**: 탭 클릭 시 선택 시트 — 수강신청 / 설명회 신청 분기
-- **Drawer**: 카카오채널상담 링크 추가
+- **Drawer**: 카카오채널상담 링크 추가, 로고 이미지 + 텍스트 조합으로 변경
+
+### 공통 UI
+- **네비게이션 로고**: 로고 이미지(`/icon/incodingplus_logo.png`, 고정 파일) + "인코딩플러스" 텍스트 나란히 배치
+  - TopNav 모바일 28px / 데스크탑 32px, Drawer 26px
+  - Favicon도 동일 이미지(`index.html` `<link rel="icon">`)로 설정
 
 ### 공통 컴포넌트
 - **DarkCTAFooter** (`src/components/DarkCTAFooter.tsx`): 홈·수업소개·블로그 하단 공유

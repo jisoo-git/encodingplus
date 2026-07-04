@@ -62,6 +62,8 @@ export default function Home() {
   const [banners, setBanners] = useState<Banner[]>(FALLBACK_BANNERS)
   const [slide, setSlide] = useState(0)
   const touchStartX = useRef<number | null>(null)
+  const mouseStartX = useRef<number | null>(null)
+  const isDragging = useRef(false)
 
   useEffect(() => {
     getDocs(query(collection(db, 'banners'), orderBy('order')))
@@ -87,6 +89,22 @@ export default function Home() {
     touchStartX.current = null
   }
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    mouseStartX.current = e.clientX
+    isDragging.current = false
+  }
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (mouseStartX.current !== null && Math.abs(e.clientX - mouseStartX.current) > 5) {
+      isDragging.current = true
+    }
+  }
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (mouseStartX.current === null) return
+    const diff = mouseStartX.current - e.clientX
+    if (Math.abs(diff) > 40) diff > 0 ? next() : prev()
+    mouseStartX.current = null
+  }
+
   return (
     <div>
 
@@ -94,9 +112,13 @@ export default function Home() {
       <div style={{ background: '#fff', padding: '16px 16px 0' }}>
         <div className="md:max-w-[1100px] md:mx-auto">
           <div
-            style={{ position: 'relative', aspectRatio: '16/9', borderRadius: 18, overflow: 'hidden' }}
+            style={{ position: 'relative', aspectRatio: '16/9', borderRadius: 18, overflow: 'hidden', userSelect: 'none' }}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={() => { mouseStartX.current = null }}
           >
             {banners.map((b, i) => (
               <div
@@ -137,22 +159,32 @@ export default function Home() {
               </button>
             )}
 
-            {/* 화살표 — 우하단 */}
-            <button onClick={prev} aria-label="이전 배너" style={{
-              position: 'absolute', right: 44, bottom: 14, zIndex: 2,
+            {/* 카운터 — 우측 하단 */}
+            <div style={{
+              position: 'absolute', right: 12, bottom: 12, zIndex: 2,
+              background: 'rgba(0,0,0,0.45)',
+              borderRadius: 20, padding: '3px 10px',
+              fontSize: 13, fontWeight: 700, color: '#fff', letterSpacing: '0.02em',
+            }}>
+              {slide + 1} / {banners.length}
+            </div>
+
+            {/* 화살표 — 좌우 중앙 */}
+            <button onClick={prev} aria-label="이전 배너" className="banner-arrow" style={{
+              position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', zIndex: 2,
               background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)',
               backdropFilter: 'blur(4px)',
-              borderRadius: '50%', width: 28, height: 28,
+              borderRadius: '50%', width: 48, height: 48,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 15, color: '#fff', cursor: 'pointer',
+              fontSize: 26, color: '#fff', cursor: 'pointer',
             }}>‹</button>
-            <button onClick={next} aria-label="다음 배너" style={{
-              position: 'absolute', right: 10, bottom: 14, zIndex: 2,
+            <button onClick={next} aria-label="다음 배너" className="banner-arrow" style={{
+              position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', zIndex: 2,
               background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)',
               backdropFilter: 'blur(4px)',
-              borderRadius: '50%', width: 28, height: 28,
+              borderRadius: '50%', width: 48, height: 48,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 15, color: '#fff', cursor: 'pointer',
+              fontSize: 26, color: '#fff', cursor: 'pointer',
             }}>›</button>
           </div>
 
