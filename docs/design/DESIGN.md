@@ -380,7 +380,7 @@ Fallback: `-apple-system, BlinkMacSystemFont, sans-serif`.
 
 ### 네비게이션
 
-**`top-nav-user`** — 사용자용 상단 바. `{colors.canvas}` 배경, 하단 `1px {colors.border}`. 높이 56px(모바일) / 72px(데스크탑). 좌측: 로고(`인코딩플러스+`). 우측: 메뉴 링크 4개(홈·수업소개·블로그·수강신청) + 모바일 햄버거. 로고의 `+`는 `{colors.primary}` (#2563eb).
+**`top-nav-user`** — 사용자용 상단 바. `{colors.canvas}` 배경, 하단 `1px {colors.border}`. 높이 56px(모바일) / 72px(데스크탑). 좌측: 로고(이미지 + "인코딩플러스" 텍스트, → "로고" 섹션). 우측: 메뉴 링크 4개(홈·수업소개·블로그·수강신청) + 모바일 햄버거.
 
 **`top-nav-admin`** — 관리자용 상단 바. 동일 배경·높이. 좌측: 로고 + `관리자` 뱃지(blue-100 배경, blue-700 텍스트). 우측: 탭 5개(신청현황·폼편집·홍보배너·블로그·홈으로) + 모바일 햄버거.
 
@@ -490,12 +490,13 @@ Fallback: `-apple-system, BlinkMacSystemFont, sans-serif`.
 ## 로고
 
 ```
-인코딩플러스+
+[로고 이미지] 인코딩플러스
 ```
-- `인코딩플러스` — `{colors.ink}` (#18181b), fontWeight 800
-- `+` — `{colors.primary}` (#2563eb), 동일 weight·size
+- 로고 이미지 — `/icon/incodingplus_logo.png` (고정 파일). `height` 28px(모바일) / 32px(데스크탑), `width: auto`. 브랜드의 `+` 심볼은 이 이미지 안에 포함된다.
+- `인코딩플러스` 텍스트 — `{colors.ink}` (#18181b), fontWeight 800, `letterSpacing -0.03em`. 이미지 오른쪽에 나란히 배치.
 - 모바일 18px / 데스크탑 21px
-- 관리자: 텍스트 뒤에 `관리자` 뱃지 — `{colors.primary-light}` 배경 + `{colors.primary-dark}` 텍스트, `{rounded.xs}`.
+- 관리자: 텍스트 뒤에 `관리자` 뱃지 — blue-100 배경 + blue-700 텍스트, `{rounded.xs}`.
+- 적용 위치: 사용자 `TopNav`·`Drawer`, 관리자 `AdminLayout`.
 
 ---
 

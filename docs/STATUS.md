@@ -67,9 +67,9 @@
 
 ## 참고
 
-- 디자인 가이드: `plan/DESIGN.md`
-- 파일 지도: `plan/PROJECT_MAP.md`
-- 페이지 스펙: `plan/specs/`
+- 디자인 가이드: `docs/design/DESIGN.md`
+- 파일 지도: `docs/PROJECT_MAP.md`
+- 페이지 스펙: `docs/specs/`
 - GitHub: `https://github.com/archers7727/incodingplushome`
 - 배포 URL: TBD (선생님 Vercel 연결 후 업데이트)
 - Firebase 설정: `src/firebase/config.ts`
