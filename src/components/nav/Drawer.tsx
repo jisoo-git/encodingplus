@@ -5,6 +5,7 @@ const MENU_ITEMS = [
   { label: '홈', path: '/' },
   { label: '수업 소개', path: '/courses' },
   { label: '수강 신청', path: '/apply' },
+  { label: '상담 예약', path: '/consult' },
   { label: '입시 블로그', path: '/blog' },
 ]
 

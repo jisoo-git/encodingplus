@@ -22,6 +22,7 @@
 | 페이지 | 문서 |
 |--------|------|
 | 수강신청 Apply | [docs/specs/APPLY_SPEC.md](docs/specs/APPLY_SPEC.md) |
+| 상담예약 Consult | [docs/specs/CONSULT_SPEC.md](docs/specs/CONSULT_SPEC.md) |
 | 수업소개 Courses | [docs/specs/COURSES_SPEC.md](docs/specs/COURSES_SPEC.md) |
 | 블로그 Blog | [docs/specs/BLOG_SPEC.md](docs/specs/BLOG_SPEC.md) |
 
@@ -31,6 +32,7 @@
 |------|----------|
 | UI 구현·수정 | [docs/design/DESIGN.md](docs/design/DESIGN.md) |
 | 신청 폼 변경 | [docs/specs/APPLY_SPEC.md](docs/specs/APPLY_SPEC.md) → [docs/DEPENDENCY-MAP.md](docs/DEPENDENCY-MAP.md) |
+| 상담 예약 변경 | [docs/specs/CONSULT_SPEC.md](docs/specs/CONSULT_SPEC.md) → [docs/DEPENDENCY-MAP.md](docs/DEPENDENCY-MAP.md) |
 | 배너·블로그 변경 | [docs/specs/BLOG_SPEC.md](docs/specs/BLOG_SPEC.md) → [docs/DEPENDENCY-MAP.md](docs/DEPENDENCY-MAP.md) |
 | 데이터·스키마 변경 | [docs/DATA-MODEL.md](docs/DATA-MODEL.md) → [docs/DEPENDENCY-MAP.md](docs/DEPENDENCY-MAP.md) |
 | 배포 | [docs/OPERATIONS.md](docs/OPERATIONS.md) |

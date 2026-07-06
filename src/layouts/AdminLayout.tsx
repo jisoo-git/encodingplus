@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Outlet } from 'react-router-dom'
 
 const ADMIN_TABS = [
   { label: '신청현황', path: '/admin/submissions' },
+  { label: '상담예약', path: '/admin/consultations' },
   { label: '폼 편집', path: '/admin/builder' },
   { label: '홍보배너', path: '/admin/banners' },
   { label: '블로그', path: '/admin/blog' },
@@ -10,6 +11,7 @@ const ADMIN_TABS = [
 
 const BOTTOM_TABS = [
   { icon: '📋', label: '신청현황', path: '/admin/submissions' },
+  { icon: '📅', label: '상담예약', path: '/admin/consultations' },
   { icon: '📝', label: '폼 편집', path: '/admin/builder' },
   { icon: '🖼️', label: '홍보배너', path: '/admin/banners' },
   { icon: '✏️', label: '블로그', path: '/admin/blog' },

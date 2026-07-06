@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 const NAV_LINKS = [
   { label: '홈', path: '/' },
   { label: '수업 소개', path: '/courses' },
+  { label: '상담 예약', path: '/consult' },
   { label: '입시 블로그', path: '/blog' },
 ]
 
