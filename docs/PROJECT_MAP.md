@@ -42,6 +42,13 @@
 |------|------|
 | `config.ts` | Firebase 초기화 + `db` export (Firestore) |
 
+### src/consult/  (상담 예약)
+| 파일 | 역할 |
+|------|------|
+| `types.ts` | `ConsultConfig`·`DaySchedule`·`ConsultDoc`·`ConsultStatus` + `DEFAULT_CONFIG`(초기 스케줄) |
+| `slots.ts` | 순수 슬롯 계산(Firestore 무관) — `ymd`·`slotKey`·`hoursForDate`·`dateStrip`·`isBookable` |
+| `api.ts` | Firestore I/O — `fetchConfig`·`saveConfig`·`fetchDayDocs`·`fetchAll`·`bookSlot`(트랜잭션)·`blockSlot`·`removeSlot`·`updateStatus` |
+
 ### src/hooks/
 | 파일 | 역할 |
 |------|------|
@@ -80,6 +87,7 @@
 | `Home.tsx` | 홈 — 배너 슬라이더(Firestore/FALLBACK), Stats, WHY 섹션, 개설강좌 2개 미리보기, 다크 CTA |
 | `Courses.tsx` | 수업소개 — CourseFullCard 전면 표시(상세설명·수업구성·수업시간·CTA / 수강료 미노출), 다크 CTA |
 | `Apply.tsx` | 수강신청 — Firestore 활성 폼 로드, 스텝별 폼 렌더, 제출 |
+| `Consult.tsx` | 상담 예약 — react-day-picker 월 캘린더+시간 격자, 점유/지난 시간 disabled, 트랜잭션 예약 |
 | `Blog.tsx` | 블로그 목록 — 카드 그리드(gridAutoRows 1fr, height 100%), 고정글 별도 섹션, FALLBACK_POSTS 내보냄 |
 | `BlogPost.tsx` | 블로그 상세 — 대표이미지, 해시태그pill, 본문 마크다운 렌더(react-markdown), 밝은 CTA |
 | `FormPage.tsx` | 외부 폼 페이지 (별도 경로, 관리자 아님) |
@@ -88,7 +96,8 @@
 | 파일 | 역할 |
 |------|------|
 | `AdminLogin.tsx` | 관리자 로그인 페이지 (/admin) |
-| `AdminSubmissions.tsx` | 신청현황 — 목록 + 상태(새신청/확인완료/상담완료) 변경, 바텀시트 상세, 토스트 피드백 |
+| `AdminSubmissions.tsx` | 신청현황 — submissions + **상담예약(consultations) 통합 목록**, 유형 배지·상담예약 필터, 상태(새신청/확인완료/상담완료) 변경(출처별 라우팅), 바텀시트 상세 |
+| `AdminConsultations.tsx` | 상담 예약 관리 — 예약목록(취소·상태)/시간차단/스케줄설정 3섹션 |
 | `AdminBanners.tsx` | 홍보배너 관리 — CRUD, 순서 변경(dirty state), 바텀시트 편집폼 |
 | `AdminBlogList.tsx` | 블로그 목록 관리 — Firestore 글 목록, 수정/삭제 버튼 |
 | `AdminBlogWrite.tsx` | 블로그 글 작성/수정 — 마크다운 에디터(작성/미리보기 탭), 태그/제목/요약/대표이미지 입력, 초안/발행 관리 |
@@ -123,6 +132,7 @@
 | `DEPENDENCY-MAP.md` | 연동 영향범위 — 사용자↔관리자 blast radius |
 | `design/DESIGN.md` | 디자인 지침서 — YAML 토큰 + 컴포넌트·색상·타이포 스펙 (BMW 스타일) |
 | `specs/APPLY_SPEC.md` | 수강신청 렌더링 스펙 (enrollment 3-step·설명회 경로) |
+| `specs/CONSULT_SPEC.md` | 상담 예약 스펙 (슬롯=문서·트랜잭션·설정 문서) |
 | `specs/COURSES_SPEC.md` | 수업소개 페이지 상세 스펙 (수업 데이터 단일 출처) |
 | `specs/BLOG_SPEC.md` | 블로그 페이지 상세 스펙 |
 
@@ -176,6 +186,8 @@
 | `blogPosts` | Blog.tsx, BlogPost.tsx, AdminBlogList.tsx | AdminBlogWrite.tsx |
 | `submissions` | AdminSubmissions.tsx | Apply.tsx |
 | `forms` | Apply.tsx, FormBuilder.tsx | FormBuilder.tsx |
+| `consultations` | Consult.tsx, AdminConsultations.tsx, **AdminSubmissions.tsx**(통합 인박스) | Consult.tsx, AdminConsultations.tsx, AdminSubmissions.tsx(상태변경) |
+| `settings/consultation` | Consult.tsx, AdminConsultations.tsx | AdminConsultations.tsx |
 
 ---
 

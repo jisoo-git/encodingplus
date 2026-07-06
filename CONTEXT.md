@@ -40,6 +40,10 @@ _Avoid_: 설명회 등록, 세미나.
 사용자가 공개된 **Form**을 제출해 남긴 신청 기록. `submissions` 컬렉션, `status`로 처리 상태(new 등)를 추적. 관리자 AdminSubmissions에서 확인.
 _Avoid_: 응답(→ "Flagged ambiguities" 참조), 접수.
 
+**상담 예약 (Consultation)**:
+학부모·학생이 날짜·시간을 골라 1:1 상담을 예약하는 별도 흐름. **Form 시스템을 쓰지 않고** `consultations` 컬렉션에 **슬롯 문서**(문서 ID=`날짜_시`)로 쌓인다. 1시간 단위, **슬롯당 1팀**. 예약(`kind:'booking'`)·관리자 차단(`kind:'block'`)이 같은 슬롯을 점유하며, 취소·해제는 문서 삭제. 가용 시간은 `settings/consultation` 설정 문서로 관리자가 정한다.
+_Avoid_: 예약 신청(→ 그냥 "상담 예약"), 상담 신청(수강/설명회 **신청**과 혼동), 슬롯 접수.
+
 ### 관리자
 
 **관리자 (Admin)**:
