@@ -59,6 +59,15 @@
 - 관리자 조회는 `consultations` 전체를 한 번에 읽어 client에서 kind/날짜별로 나눈다(복합 인덱스 회피, 학원 규모상 소량).
 - 관리자 탭이 4개→**5개**가 된다(`AdminLayout`의 `ADMIN_TABS`·`BOTTOM_TABS` 둘 다 추가).
 
+### 신청현황 통합 인박스
+
+상담 예약을 놓치지 않도록 `AdminSubmissions`(신청현황)가 `submissions` **+ `consultations`(예약분)를 한 목록**으로 합쳐 보여준다. 두 흐름의 상태 모델이 동일(`new/confirmed/done`)해 UI를 그대로 재사용한다.
+
+- 각 행에 **출처(`source`) 구분**: `submission`(수강신청·설명회) / `consult`(상담예약). 유형 배지로 표시, 상담예약은 `날짜(요일) 시` 를 보조 텍스트로.
+- 필터 pill에 **"상담예약"** 추가(`__consult__` 센티널). "전체"는 도착순으로 모두 표시 → 누락 방지.
+- **상태 변경은 출처별 라우팅**: `consult`면 `consultations` 문서, 아니면 `submissions` 문서에 기록.
+- **역할 분담**: 신청현황 = 통합 인박스(놓침 방지), 상담예약 탭 = 슬롯 운영(취소·차단·스케줄). 슬롯 취소/차단은 상담예약 탭에서만.
+
 ## 진입점 · 라우팅
 
 - 라우트: `/consult`(사용자, `UserLayout` 하위), `/admin/consultations`(관리자, `ProtectedRoute` 하위).

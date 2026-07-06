@@ -96,7 +96,7 @@
 | 파일 | 역할 |
 |------|------|
 | `AdminLogin.tsx` | 관리자 로그인 페이지 (/admin) |
-| `AdminSubmissions.tsx` | 신청현황 — 목록 + 상태(새신청/확인완료/상담완료) 변경, 바텀시트 상세, 토스트 피드백 |
+| `AdminSubmissions.tsx` | 신청현황 — submissions + **상담예약(consultations) 통합 목록**, 유형 배지·상담예약 필터, 상태(새신청/확인완료/상담완료) 변경(출처별 라우팅), 바텀시트 상세 |
 | `AdminConsultations.tsx` | 상담 예약 관리 — 예약목록(취소·상태)/시간차단/스케줄설정 3섹션 |
 | `AdminBanners.tsx` | 홍보배너 관리 — CRUD, 순서 변경(dirty state), 바텀시트 편집폼 |
 | `AdminBlogList.tsx` | 블로그 목록 관리 — Firestore 글 목록, 수정/삭제 버튼 |
@@ -186,7 +186,7 @@
 | `blogPosts` | Blog.tsx, BlogPost.tsx, AdminBlogList.tsx | AdminBlogWrite.tsx |
 | `submissions` | AdminSubmissions.tsx | Apply.tsx |
 | `forms` | Apply.tsx, FormBuilder.tsx | FormBuilder.tsx |
-| `consultations` | Consult.tsx, AdminConsultations.tsx | Consult.tsx, AdminConsultations.tsx |
+| `consultations` | Consult.tsx, AdminConsultations.tsx, **AdminSubmissions.tsx**(통합 인박스) | Consult.tsx, AdminConsultations.tsx, AdminSubmissions.tsx(상태변경) |
 | `settings/consultation` | Consult.tsx, AdminConsultations.tsx | AdminConsultations.tsx |
 
 ---
