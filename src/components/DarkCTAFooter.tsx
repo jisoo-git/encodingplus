@@ -6,19 +6,19 @@ export default function DarkCTAFooter() {
   return (
     <div className="dark-cta-bottom" style={{ background: '#18181b', paddingTop: 32, paddingLeft: 20, paddingRight: 20, textAlign: 'center' }}>
       <div className="md:max-w-[600px] md:mx-auto">
-        <div style={{ fontSize: 20, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>지금 바로 수강 신청하세요</div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', marginTop: 6, lineHeight: 1.6 }}>이번주 주말부터 시작합니다 · 선착순 마감</div>
+        <div style={{ fontSize: 20, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>지금 바로 상담 예약하세요</div>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', marginTop: 6, lineHeight: 1.6 }}>원하는 날짜·시간에 1:1 상담을 예약하세요</div>
         <div style={{ marginTop: 18, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
           <a href="tel:01028382391" style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
             전화 상담 010-2838-2391
           </a>
           <div style={{ display: 'flex', gap: 8 }}>
             <button
-              onClick={() => navigate('/apply')}
+              onClick={() => navigate('/consult')}
               className="hover-btn"
               style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: 10, padding: '12px 20px', fontWeight: 800, fontSize: 14, cursor: 'pointer' }}
             >
-              수강 신청하기
+              상담 예약하기
             </button>
             <a
               href="https://pf.kakao.com/_RSYxiT"

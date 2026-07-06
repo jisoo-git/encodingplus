@@ -10,7 +10,7 @@ Firestore 컬렉션별 문서 필드 구조. 용어 정의는 [CONTEXT.md](../CO
 | `blogPosts` | `{ tag, title, excerpt, coverImage, content: string, date, read, pinned?, published?, views? }` |
 | `submissions` | enrollment: `{ name, course, school, phone, formId, status, submittedAt, detail }` / 범용: `{ formId, formTitle, name?, phone?, school?, status, submittedAt, detail }` |
 | `forms` | `{ title, description, type, isActive, createdAt, sections: Section[] }` |
-| `consultations` | 슬롯 점유. 문서 ID=`YYYY-MM-DD_HH`. `{ kind: 'booking'\|'block', date, hour, name?, phone?, status?, createdAt }` |
+| `consultations` | 슬롯 점유. 문서 ID=`YYYY-MM-DD_HH`. `{ kind: 'booking'\|'block', date, hour, name?, phone?, grade?, status?, createdAt }` (`grade`=학생 학년) |
 | `settings/consultation` | 상담 예약 설정(관리자 편집). `{ enabled, advanceDays, weekly: { 0..6: { open, start, end } } }` |
 | `responses` | quiz 전용, **보류** — [CONTEXT.md](../CONTEXT.md) "보류" 섹션 참조 |
 

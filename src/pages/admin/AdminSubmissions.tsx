@@ -100,7 +100,7 @@ export default function AdminSubmissions() {
         submittedAt: d.createdAt ?? null,
         date: d.date,
         hour: d.hour,
-        detail: {},
+        detail: (d.grade ? { 학년: d.grade } : {}) as Record<string, string>,
       })))
     } catch { setConsults([]) }
   }

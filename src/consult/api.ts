@@ -52,10 +52,11 @@ export interface BookInput {
   hour: number
   name: string
   phone: string
+  grade: string
 }
 
 /** 예약 — 트랜잭션으로 원자적 생성. 이미 점유면 SLOT_TAKEN throw. */
-export async function bookSlot({ date, hour, name, phone }: BookInput): Promise<string> {
+export async function bookSlot({ date, hour, name, phone, grade }: BookInput): Promise<string> {
   const id = slotKey(date, hour)
   const ref = doc(db, COL, id)
   await runTransaction(db, async tx => {
@@ -67,6 +68,7 @@ export async function bookSlot({ date, hour, name, phone }: BookInput): Promise<
       hour,
       name: name.trim(),
       phone: phone.trim(),
+      grade: grade.trim(),
       status: 'new',
       createdAt: serverTimestamp(),
     })

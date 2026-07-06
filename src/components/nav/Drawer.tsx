@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 
-const MENU_ITEMS = [
+const MENU_ITEMS: { label: string; path: string; primary?: boolean }[] = [
   { label: '홈', path: '/' },
   { label: '수업 소개', path: '/courses' },
-  { label: '수강 신청', path: '/apply' },
-  { label: '상담 예약', path: '/consult' },
   { label: '입시 블로그', path: '/blog' },
+  { label: '수강 신청', path: '/apply' },
+  { label: '상담 예약', path: '/consult', primary: true },
 ]
 
 interface Props {
@@ -76,12 +76,13 @@ export default function Drawer({ open, onClose }: Props) {
                 background: 'none', border: 'none',
                 padding: '15px 8px',
                 borderBottom: '1px solid #c8d0dc',
-                fontSize: 15, fontWeight: 600, color: '#3f3f46',
+                fontSize: 15, fontWeight: item.primary ? 800 : 600,
+                color: item.primary ? '#1d4ed8' : '#3f3f46',
                 borderRadius: 0,
               }}
             >
               <span>{item.label}</span>
-              <span style={{ color: '#d4d4d8', fontSize: 16 }}>›</span>
+              <span style={{ color: item.primary ? '#2563eb' : '#d4d4d8', fontSize: 16 }}>›</span>
             </button>
           ))}
         </div>

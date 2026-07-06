@@ -12,6 +12,8 @@ const inputStyle: React.CSSProperties = {
   background: '#fff', boxSizing: 'border-box', fontFamily: 'inherit',
 }
 
+const GRADE_OPTIONS = ['초6', '중1', '중2', '중3', '고1', '고2', '고3']
+
 function mdLabel(date: string) {
   const [, m, d] = date.split('-')
   return `${Number(m)}/${Number(d)}`
@@ -30,6 +32,7 @@ export default function Consult() {
 
   const [selectedHour, setSelectedHour] = useState<number | null>(null)
   const [name, setName] = useState('')
+  const [grade, setGrade] = useState('')
   const [phone, setPhone] = useState('')
 
   const [submitting, setSubmitting] = useState(false)
@@ -87,14 +90,14 @@ export default function Consult() {
 
   const canSubmit =
     !!selectedDate && selectedHour !== null &&
-    name.trim() !== '' && phone.trim() !== '' && !submitting
+    name.trim() !== '' && grade !== '' && phone.trim() !== '' && !submitting
 
   const handleSubmit = async () => {
     if (!selectedDate || selectedHour === null) return
     setSubmitting(true)
     setNotice(null)
     try {
-      await bookSlot({ date: selectedDate, hour: selectedHour, name, phone })
+      await bookSlot({ date: selectedDate, hour: selectedHour, name, phone, grade })
       setSubmitted(true)
     } catch (e) {
       if (e instanceof Error && e.message === 'SLOT_TAKEN') {
@@ -192,6 +195,14 @@ export default function Consult() {
                     style={inputStyle}
                     onFocus={e => { e.target.style.borderColor = '#2563eb' }}
                     onBlur={e => { e.target.style.borderColor = '#c8d0dc' }} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#52525b', marginBottom: 6 }}>학년</div>
+                  <select value={grade} onChange={e => setGrade(e.target.value)}
+                    style={{ ...inputStyle, appearance: 'auto' as never, color: grade ? '#18181b' : '#9ca3af' }}>
+                    <option value="">학년 선택</option>
+                    {GRADE_OPTIONS.map(g => <option key={g} value={g} style={{ color: '#18181b' }}>{g}</option>)}
+                  </select>
                 </div>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: '#52525b', marginBottom: 6 }}>연락처</div>

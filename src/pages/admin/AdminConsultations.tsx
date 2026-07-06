@@ -138,9 +138,10 @@ export default function AdminConsultations() {
                     return (
                       <div key={b.id} style={{ border: '1px solid #e4e4e7', borderRadius: 12, padding: 14, background: '#fff' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                             <span style={{ fontSize: 16, fontWeight: 800, color: '#18181b' }}>{b.hour}시</span>
                             <span style={{ fontSize: 15, fontWeight: 700, color: '#3f3f46' }}>{b.name}</span>
+                            {b.grade && <span style={{ fontSize: 11, fontWeight: 700, color: '#6d28d9', background: '#ede9fe', padding: '2px 7px', borderRadius: 5 }}>{b.grade}</span>}
                             <a href={`tel:${b.phone}`} style={{ fontSize: 13, color: '#2563eb', textDecoration: 'none' }}>{b.phone}</a>
                           </div>
                           <span style={{ fontSize: 11, fontWeight: 700, color: meta.color, background: meta.bg, padding: '3px 8px', borderRadius: 6 }}>{meta.label}</span>

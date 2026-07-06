@@ -26,6 +26,7 @@ export interface ConsultDoc {
   hour: number
   name?: string
   phone?: string
+  grade?: string // 학생 학년 (예: 중3)
   status?: ConsultStatus
   createdAt?: Timestamp
 }
