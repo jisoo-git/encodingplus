@@ -3,8 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom'
 const NAV_LINKS = [
   { label: '홈', path: '/' },
   { label: '수업 소개', path: '/courses' },
-  { label: '상담 예약', path: '/consult' },
   { label: '입시 블로그', path: '/blog' },
+  { label: '수강 신청', path: '/apply' },
 ]
 
 interface Props {
@@ -97,7 +97,7 @@ export default function TopNav({ onMenuOpen }: Props) {
             )
           })}
           <button
-            onClick={() => navigate('/apply')}
+            onClick={() => navigate('/consult')}
             className="hover-btn"
             style={{
               marginLeft: 8,
@@ -111,7 +111,7 @@ export default function TopNav({ onMenuOpen }: Props) {
               whiteSpace: 'nowrap',
             }}
           >
-            수강 신청 →
+            상담 예약 →
           </button>
         </nav>
       </header>

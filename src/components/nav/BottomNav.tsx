@@ -116,6 +116,18 @@ export default function BottomNav() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <button
+                onClick={() => { setShowSheet(false); navigate('/consult') }}
+                style={{
+                  width: '100%', padding: '16px', borderRadius: 12,
+                  background: '#2563eb', border: '1px solid #2563eb', color: '#fff',
+                  fontSize: 15, fontWeight: 700, cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                <div>상담 예약</div>
+                <div style={{ fontSize: 12, fontWeight: 500, opacity: 0.85, marginTop: 2 }}>날짜·시간 선택 1:1 상담</div>
+              </button>
+              <button
                 onClick={() => { setShowSheet(false); navigate('/apply') }}
                 style={{
                   width: '100%', padding: '16px', borderRadius: 12,
@@ -138,18 +150,6 @@ export default function BottomNav() {
               >
                 <div>설명회 신청</div>
                 <div style={{ fontSize: 12, fontWeight: 500, opacity: 0.7, marginTop: 2 }}>매주 토요일 11시</div>
-              </button>
-              <button
-                onClick={() => { setShowSheet(false); navigate('/consult') }}
-                style={{
-                  width: '100%', padding: '16px', borderRadius: 12,
-                  background: '#eff6ff', border: '1px solid #bfdbfe', color: '#1d4ed8',
-                  fontSize: 15, fontWeight: 700, cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-              >
-                <div>상담 예약</div>
-                <div style={{ fontSize: 12, fontWeight: 500, opacity: 0.7, marginTop: 2 }}>날짜·시간 선택 예약</div>
               </button>
             </div>
           </div>
