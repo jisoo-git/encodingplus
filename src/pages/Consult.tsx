@@ -113,10 +113,7 @@ export default function Consult() {
     <>
       <div className="md:max-w-[680px] md:mx-auto md:px-7">
         <div style={{ padding: '20px 18px 24px' }}>
-          <div style={{ fontSize: 18, fontWeight: 800, color: '#18181b', marginBottom: 6 }}>상담 예약</div>
-          <div style={{ fontSize: 13, color: '#71717a', marginBottom: 20 }}>
-            원하시는 날짜와 시간을 선택하세요. 이미 예약된 시간은 선택할 수 없습니다.
-          </div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: '#18181b', marginBottom: 20 }}>상담 예약</div>
 
           {configLoading && (
             <div style={{ padding: '40px 0', textAlign: 'center', color: '#8c959f', fontSize: 14 }}>불러오는 중...</div>
