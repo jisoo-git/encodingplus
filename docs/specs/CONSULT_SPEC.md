@@ -36,8 +36,8 @@
 
 ## 사용자 화면 `/consult`
 
-1. **날짜 스트립**(가로 스크롤): 오늘 ~ `advanceDays` 중 **open 요일만** 노출. 오늘은 남은 슬롯이 하나라도 있으면 포함.
-2. 날짜 선택 → 요일로 설정 조회 → 해당 날짜 슬롯 생성.
+1. **월 캘린더**(`react-day-picker` v10, 인라인): 휴무 요일(`weekly[wd].open=false`)·과거일·`advanceDays` 밖은 `disabled` 매처로 비활성화. 요일 헤더·캡션은 `formatters`로 한글화, 톤은 `.consult-cal` 스코프 CSS로 파랑(#2563eb) 매칭. 최초 진입 시 `dateStrip`의 첫 예약가능일을 자동 선택.
+2. 날짜 선택(`onSelect` → `ymd`로 문자열화) → 요일로 설정 조회 → 해당 날짜 슬롯 생성.
 3. `consultations` 그 날짜 문서 조회(`where('date','==',날짜)`) → 점유 시간 집합.
 4. **슬롯 칩 격자**: 점유(booking/block)·**지난 시간**(오늘 한정, 슬롯 시작이 현재 이전)은 disabled.
 5. 빈 칩 선택 → **이름·연락처** 입력 → `예약하기`(트랜잭션).

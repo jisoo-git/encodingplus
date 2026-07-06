@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { DayPicker } from 'react-day-picker'
+import 'react-day-picker/style.css'
 import { fetchConfig, fetchDayDocs, bookSlot } from '../consult/api'
-import { dateStrip, hoursForDate, isBookable, type DateOption } from '../consult/slots'
+import { dateStrip, hoursForDate, isBookable, ymd, type DateOption } from '../consult/slots'
 import { WEEKDAY_LABELS, type ConsultConfig } from '../consult/types'
 
 const inputStyle: React.CSSProperties = {
@@ -69,6 +71,20 @@ export default function Consult() {
   }, [selectedDate, loadDay])
 
   const hours = config && selectedDate ? hoursForDate(config, selectedDate) : []
+
+  // 캘린더 disable 매처 계산
+  const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const todayStr = ymd(startToday)
+  const todayBookable = !!config && hoursForDate(config, todayStr).some(h => isBookable(todayStr, h, now))
+  const minDate = todayBookable ? startToday : new Date(startToday.getFullYear(), startToday.getMonth(), startToday.getDate() + 1)
+  const maxDate = config
+    ? new Date(startToday.getFullYear(), startToday.getMonth(), startToday.getDate() + config.advanceDays)
+    : startToday
+  const closedWeekdays = config
+    ? [0, 1, 2, 3, 4, 5, 6].filter(wd => { const s = config.weekly[wd]; return !s || !s.open || s.start >= s.end })
+    : []
+  const selectedDateObj = selectedDate ? new Date(`${selectedDate}T00:00:00`) : undefined
+
   const canSubmit =
     !!selectedDate && selectedHour !== null &&
     name.trim() !== '' && phone.trim() !== '' && !submitting
@@ -122,26 +138,23 @@ export default function Consult() {
 
           {!configLoading && config && config.enabled && dates.length > 0 && (
             <>
-              {/* 날짜 스트립 */}
+              {/* 날짜 캘린더 */}
               <div style={{ fontSize: 13, fontWeight: 700, color: '#52525b', marginBottom: 8 }}>날짜 선택</div>
-              <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 6, marginBottom: 20 }}>
-                {dates.map(d => {
-                  const active = d.date === selectedDate
-                  return (
-                    <button key={d.date} type="button" onClick={() => setSelectedDate(d.date)}
-                      style={{
-                        flex: '0 0 auto', minWidth: 62, padding: '10px 6px', borderRadius: 12,
-                        border: active ? '2px solid #2563eb' : '1px solid #c8d0dc',
-                        background: active ? '#dbeafe' : '#fff',
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, cursor: 'pointer',
-                      }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: active ? '#1d4ed8' : '#8c959f' }}>
-                        {d.isToday ? '오늘' : `${WEEKDAY_LABELS[d.weekday]}요일`}
-                      </span>
-                      <span style={{ fontSize: 15, fontWeight: 800, color: active ? '#1d4ed8' : '#3f3f46' }}>{mdLabel(d.date)}</span>
-                    </button>
-                  )
-                })}
+              <div className="consult-cal" style={{ marginBottom: 20 }}>
+                <DayPicker
+                  mode="single"
+                  selected={selectedDateObj}
+                  onSelect={d => { if (d) setSelectedDate(ymd(d)) }}
+                  disabled={[{ dayOfWeek: closedWeekdays }, { before: minDate }, { after: maxDate }]}
+                  startMonth={minDate}
+                  endMonth={maxDate}
+                  defaultMonth={selectedDateObj ?? minDate}
+                  weekStartsOn={0}
+                  formatters={{
+                    formatCaption: m => `${m.getFullYear()}년 ${m.getMonth() + 1}월`,
+                    formatWeekdayName: d => WEEKDAY_LABELS[d.getDay()],
+                  }}
+                />
               </div>
 
               {/* 시간 격자 */}
@@ -238,6 +251,28 @@ export default function Consult() {
           </div>
         </div>
       )}
+
+      <style>{`
+        .consult-cal { display: flex; justify-content: center; }
+        .consult-cal .rdp-root {
+          --rdp-accent-color: #2563eb;
+          --rdp-accent-background-color: #dbeafe;
+          --rdp-today-color: #2563eb;
+          --rdp-day-width: 42px;
+          --rdp-day-height: 42px;
+          --rdp-day_button-width: 38px;
+          --rdp-day_button-height: 38px;
+          --rdp-day_button-border-radius: 10px;
+          font-family: inherit;
+          margin: 0;
+        }
+        .consult-cal .rdp-caption_label { font-weight: 800; color: #18181b; font-size: 15px; }
+        .consult-cal .rdp-weekday { color: #8c959f; font-weight: 600; font-size: 12px; text-transform: none; }
+        .consult-cal .rdp-day_button { font-size: 14px; color: #3f3f46; font-family: inherit; }
+        .consult-cal .rdp-selected .rdp-day_button { font-weight: 800; border: 2px solid #2563eb; }
+        .consult-cal .rdp-disabled { opacity: 0.28; }
+        .consult-cal .rdp-nav button { color: #52525b; }
+      `}</style>
     </>
   )
 }

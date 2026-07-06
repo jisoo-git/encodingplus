@@ -87,7 +87,7 @@
 | `Home.tsx` | 홈 — 배너 슬라이더(Firestore/FALLBACK), Stats, WHY 섹션, 개설강좌 2개 미리보기, 다크 CTA |
 | `Courses.tsx` | 수업소개 — CourseFullCard 전면 표시(상세설명·수업구성·수업시간·CTA / 수강료 미노출), 다크 CTA |
 | `Apply.tsx` | 수강신청 — Firestore 활성 폼 로드, 스텝별 폼 렌더, 제출 |
-| `Consult.tsx` | 상담 예약 — 날짜 스트립+시간 격자, 점유/지난 시간 disabled, 트랜잭션 예약 |
+| `Consult.tsx` | 상담 예약 — react-day-picker 월 캘린더+시간 격자, 점유/지난 시간 disabled, 트랜잭션 예약 |
 | `Blog.tsx` | 블로그 목록 — 카드 그리드(gridAutoRows 1fr, height 100%), 고정글 별도 섹션, FALLBACK_POSTS 내보냄 |
 | `BlogPost.tsx` | 블로그 상세 — 대표이미지, 해시태그pill, 본문 마크다운 렌더(react-markdown), 밝은 CTA |
 | `FormPage.tsx` | 외부 폼 페이지 (별도 경로, 관리자 아님) |
