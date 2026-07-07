@@ -12,7 +12,7 @@ const inputStyle: React.CSSProperties = {
   background: '#fff', boxSizing: 'border-box', fontFamily: 'inherit',
 }
 
-const GRADE_OPTIONS = ['초6', '중1', '중2', '중3', '고1', '고2', '고3']
+const GRADE_OPTIONS = ['초6 미만', '초6', '중1', '중2', '중3', '고1', '고2', '고3', '기타']
 
 function mdLabel(date: string) {
   const [, m, d] = date.split('-')
