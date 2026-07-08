@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { resolveSeminarApplyPath } from '../forms/routes'
 
 // 상담·신청 허브 — 흩어져 있던 세 흐름(상담 예약·수강 신청·설명회 신청)의 단일 진입점.
 // 각 카드는 기존 페이지로 그대로 연결한다(슬롯 예약·수강신청 폼·설명회 폼은 손대지 않음).
@@ -17,14 +18,26 @@ type HubCard = {
 }
 
 const CARDS: HubCard[] = [
-  { id: 'consult', icon: '💬', title: '상담 예약', desc: '입시 방향이 궁금하다면', cta: '예약하기', to: '/consult', grad: 'linear-gradient(135deg,#3b82f6,#2563eb)' },
-  { id: 'apply', icon: '📝', title: '수강 신청', desc: '바로 등록하고 싶다면', cta: '신청하기', to: '/apply', grad: 'linear-gradient(135deg,#2563eb,#1d4ed8)' },
-  { id: 'seminar', icon: '🎤', title: '설명회 신청', desc: '먼저 설명회에 참석하려면', cta: '신청하기', to: '/apply?type=seminar', grad: 'linear-gradient(135deg,#1d4ed8,#1e40af)' },
+  { id: 'consult', icon: '💬', title: '상담 예약', desc: '개인별 상황에 맞는 입시 상담을 도와드립니다.', cta: '예약하기', to: '/consult', grad: 'linear-gradient(135deg,#3b82f6,#2563eb)' },
+  { id: 'apply', icon: '📝', title: '수강 신청', desc: '체계적인 수업으로 원하는 결과를 준비합니다.', cta: '신청하기', to: '/apply', grad: 'linear-gradient(135deg,#2563eb,#1d4ed8)' },
+  { id: 'seminar', icon: '🎤', title: '설명회 신청', desc: '설명회를 통해 프로그램과 입시 전략을 안내드립니다.', cta: '신청하기', to: '/apply', grad: 'linear-gradient(135deg,#1d4ed8,#1e40af)' },
 ]
 
 export default function ApplyHub() {
   const navigate = useNavigate()
 
+  const openCard = async (card: HubCard) => {
+    if (card.id === 'seminar') {
+      const seminarPath = await resolveSeminarApplyPath()
+      if (!seminarPath) {
+        alert('설명회 신청 폼이 설정되지 않았습니다.')
+        return
+      }
+      navigate(seminarPath)
+      return
+    }
+    navigate(card.to)
+  }
   return (
     <div className="md:max-w-[860px] md:mx-auto md:px-7">
       <div style={{ padding: '20px 18px 34px' }}>
@@ -40,7 +53,7 @@ export default function ApplyHub() {
           {CARDS.map(card => (
             <button
               key={card.id}
-              onClick={() => navigate(card.to)}
+              onClick={() => openCard(card)}
               className="hub-card"
               style={{
                 background: '#fff',

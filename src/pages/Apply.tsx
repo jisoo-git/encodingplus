@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { collection, addDoc, getDocs, serverTimestamp, query, where } from 'firebase/firestore'
+import { collection, addDoc, getDocs, getDoc, doc, serverTimestamp, query, where } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import type { Form, Question } from '../types'
+import { resolveSeminarApplyPath } from '../forms/routes'
 
 const COURSE_OPTIONS = [
   { name: '입시 단기특강', desc: '특별전형 + 일반전형 병행 · 토요일 6h + 수요일 1h' },
@@ -30,7 +31,8 @@ function findAnswer(questions: Question[], keyword: string, answers: Record<stri
 export default function Apply() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const formType = searchParams.get('type')
+  const formId = searchParams.get('formId')
+  const isSeminarAlias = searchParams.get('type') === 'seminar'
   const [step, setStep] = useState(1)
   const [privacy, setPrivacy] = useState<string | null>(null)
   const [course, setCourse] = useState<string | null>(null)
@@ -42,27 +44,37 @@ export default function Apply() {
   const [formLoading, setFormLoading] = useState(true)
 
   useEffect(() => {
-    async function fetchActiveForm() {
+    async function fetchForm() {
+      setFormLoading(true)
+      setActiveForm(null)
       try {
-        const q = formType
-          ? query(collection(db, 'forms'), where('type', '==', formType))
-          : query(collection(db, 'forms'), where('isActive', '==', true))
-        const snap = await getDocs(q)
-        if (!snap.empty) {
-          const d = snap.docs[0]
-          setActiveForm({ id: d.id, ...(d.data() as Omit<Form, 'id'>) })
+        if (!formId && isSeminarAlias) {
+          const seminarPath = await resolveSeminarApplyPath()
+          if (seminarPath) navigate(seminarPath, { replace: true })
+          return
+        }
+
+        if (formId) {
+          const snap = await getDoc(doc(db, 'forms', formId))
+          if (snap.exists()) {
+            const form = { id: snap.id, ...(snap.data() as Omit<Form, 'id'>) }
+            if (form.type !== 'quiz') setActiveForm(form)
+          }
+          return
+        }
+
+        const snap = await getDocs(query(collection(db, 'forms'), where('isActive', '==', true)))
+        const activeEnrollment = snap.docs.find(d => (d.data() as Partial<Form>).type === 'enrollment')
+        if (activeEnrollment) {
+          setActiveForm({ id: activeEnrollment.id, ...(activeEnrollment.data() as Omit<Form, 'id'>) })
         }
       } catch {}
       finally { setFormLoading(false) }
     }
-    fetchActiveForm()
-  }, [formType])
+    fetchForm()
+  }, [formId, isSeminarAlias, navigate])
 
-  // formType 파라미터가 명시된 경우 해당 타입 폼만 판별, 없으면 enrollment 기본
-  const isEnrollment = formType
-    ? activeForm?.type === 'enrollment'
-    : !activeForm || activeForm.type === 'enrollment'
-
+  const isEnrollment = activeForm?.type === 'enrollment' || (!formId && !isSeminarAlias && !activeForm)
   // ── 수강신청 전용 ──
   const confirmSection = activeForm?.sections.find(s => s.title === '신청 확인') ?? null
   const confirmInfos = (confirmSection?.questions ?? []).filter(q => q.type === 'info')

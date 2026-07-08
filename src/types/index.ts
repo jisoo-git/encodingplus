@@ -12,7 +12,7 @@ export type QuestionType =
   | 'number'
   | 'info'
 
-export type FormType = 'enrollment' | 'quiz'
+export type FormType = 'enrollment' | 'generic' | 'quiz'
 
 export interface Question {
   id: string
