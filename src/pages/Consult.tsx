@@ -5,6 +5,7 @@ import 'react-day-picker/style.css'
 import { fetchConfig, fetchDayDocs, bookSlot } from '../consult/api'
 import { dateStrip, hoursForDate, isBookable, ymd, type DateOption } from '../consult/slots'
 import { WEEKDAY_LABELS, type ConsultConfig } from '../consult/types'
+import { notifySubmissionCreated } from '../lib/discordNotifications'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', border: '1px solid #c8d0dc', borderRadius: 10,
@@ -98,6 +99,15 @@ export default function Consult() {
     setNotice(null)
     try {
       await bookSlot({ date: selectedDate, hour: selectedHour, name, phone, grade })
+      await notifySubmissionCreated({
+        kind: 'consultation',
+        title: '\uC0C1\uB2F4 \uC608\uC57D',
+        name,
+        phone,
+        grade,
+        date: selectedDate,
+        hour: selectedHour,
+      })
       setSubmitted(true)
     } catch (e) {
       if (e instanceof Error && e.message === 'SLOT_TAKEN') {

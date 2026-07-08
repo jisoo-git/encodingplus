@@ -4,6 +4,7 @@ import { collection, addDoc, getDocs, getDoc, doc, serverTimestamp, query, where
 import { db } from '../firebase/config'
 import type { Form, Question } from '../types'
 import { resolveSeminarApplyPath } from '../forms/routes'
+import { notifySubmissionCreated } from '../lib/discordNotifications'
 
 const COURSE_OPTIONS = [
   { name: '입시 단기특강', desc: '특별전형 + 일반전형 병행 · 토요일 6h + 수요일 1h' },
@@ -145,6 +146,11 @@ export default function Apply() {
       const name  = extract(['이름', '성명'])
       const phone = extract(['연락처', '전화번호', '전화'])
       const school = extract(['학교'])
+      const detail = Object.fromEntries(
+        allQuestions
+          .filter(q => q.type !== 'info' && answers[q.id] !== undefined)
+          .map(q => [q.label, Array.isArray(answers[q.id]) ? (answers[q.id] as string[]).join(', ') : answers[q.id]])
+      )
 
       await addDoc(collection(db, 'submissions'), {
         ...(name   && { name }),
@@ -159,6 +165,15 @@ export default function Apply() {
             .filter(q => q.type !== 'info' && answers[q.id] !== undefined)
             .map(q => [q.label, Array.isArray(answers[q.id]) ? (answers[q.id] as string[]).join(', ') : answers[q.id]])
         ),
+      })
+      await notifySubmissionCreated({
+        kind: activeForm?.type === 'enrollment' ? 'enrollment' : 'application',
+        title: activeForm?.title ?? '\uC2E0\uCCAD',
+        name,
+        phone,
+        school,
+        formTitle: activeForm?.title,
+        detail,
       })
       setSubmitted(true)
     } catch {
@@ -185,19 +200,33 @@ export default function Apply() {
   const handleSubmit = async () => {
     setSubmitting(true)
     try {
+      const name = findAnswer(step3Questions, '\uC774\uB984', answers)
+      const school = findAnswer(step3Questions, '\uD559\uAD50', answers)
+      const phone = findAnswer(step3Questions, '\uC5F0\uB77D\uCC98', answers) || findAnswer(step3Questions, '\uC804\uD654', answers)
+      const detail = Object.fromEntries(
+        step3Questions
+          .filter(q => q.type !== 'info' && answers[q.id] !== undefined)
+          .map(q => [q.label, Array.isArray(answers[q.id]) ? (answers[q.id] as string[]).join(', ') : answers[q.id]])
+      )
       await addDoc(collection(db, 'submissions'), {
-        name: findAnswer(step3Questions, '이름', answers),
+        name,
         course,
-        school: findAnswer(step3Questions, '학교', answers),
-        phone: findAnswer(step3Questions, '연락처', answers) || findAnswer(step3Questions, '전화', answers),
+        school,
+        phone,
         submittedAt: serverTimestamp(),
         status: 'new',
         formId: activeForm?.id,
-        detail: Object.fromEntries(
-          step3Questions
-            .filter(q => q.type !== 'info' && answers[q.id] !== undefined)
-            .map(q => [q.label, Array.isArray(answers[q.id]) ? (answers[q.id] as string[]).join(', ') : answers[q.id]])
-        ),
+        detail,
+      })
+      await notifySubmissionCreated({
+        kind: 'enrollment',
+        title: '\uC218\uAC15\uC2E0\uCCAD',
+        name,
+        phone,
+        school,
+        course: course ?? undefined,
+        formTitle: activeForm?.title,
+        detail,
       })
       setSubmitted(true)
     } catch {
