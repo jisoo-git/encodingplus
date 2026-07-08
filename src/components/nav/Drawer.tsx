@@ -5,8 +5,7 @@ const MENU_ITEMS: { label: string; path: string; primary?: boolean }[] = [
   { label: '홈', path: '/' },
   { label: '수업 소개', path: '/courses' },
   { label: '입시 블로그', path: '/blog' },
-  { label: '수강 신청', path: '/apply' },
-  { label: '상담 예약', path: '/consult', primary: true },
+  { label: '신청하기', path: '/start', primary: true },
 ]
 
 interface Props {

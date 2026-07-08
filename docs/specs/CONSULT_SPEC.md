@@ -71,8 +71,8 @@
 ## 진입점 · 라우팅
 
 - 라우트: `/consult`(사용자, `UserLayout` 하위), `/admin/consultations`(관리자, `ProtectedRoute` 하위).
-- `BottomNav` "신청" 바텀시트에 3번째 버튼 **"상담 예약"** → `/consult`.
-- `Drawer`·`TopNav`에도 "상담 예약" 링크 추가(파리티).
+- **상담·신청 허브(`/start`, `ApplyHub.tsx`)가 단일 진입점**이다. 흩어져 있던 상담예약·수강신청·설명회 3흐름을 카드 3장으로 묶고, "상담 예약" 카드가 `/consult`로 연결한다. `/consult` 자체는 그대로(슬롯 예약 시스템 무변경).
+- 모든 네비 표면이 허브로 모인다: `TopNav` CTA "상담·신청 →" → `/start`, `BottomNav` "신청" 탭 → `/start`(기존 바텀시트 제거), `Drawer` "상담·신청" → `/start`. 홈 다크 CTA도 `/start`.
 - Vercel `vercel.json` catch-all rewrite로 딥링크 정상(설정 변경 불필요).
 
 ## 코드 구조

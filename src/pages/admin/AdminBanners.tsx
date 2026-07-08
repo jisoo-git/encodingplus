@@ -16,13 +16,14 @@ interface Banner {
 const EMPTY_FORM = { image: '', link: '/apply', cta: '' }
 
 const LINK_OPTIONS = [
+  { value: '/start',   label: '상담·신청 (/start)' },
   { value: '/apply',   label: '수강 신청 (/apply)' },
   { value: '/courses', label: '수업 소개 (/courses)' },
   { value: '/blog',    label: '블로그 (/blog)' },
   { value: '__custom__', label: '직접 입력 (외부 URL 포함)' },
 ]
 
-const isCustomLink = (link: string) => !['', '/apply', '/courses', '/blog'].includes(link)
+const isCustomLink = (link: string) => !['', '/start', '/apply', '/courses', '/blog'].includes(link)
 
 export default function AdminBanners() {
   const [banners, setBanners] = useState<Banner[]>([])

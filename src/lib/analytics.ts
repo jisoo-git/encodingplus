@@ -18,7 +18,9 @@ export function resolvePageTitle(pathname: string): string {
   const base = '인코딩플러스'
   if (pathname === '/') return '인코딩플러스 — 디미고 합격률 전국 1위'
   if (pathname === '/courses') return `${base} — 수업 안내`
+  if (pathname === '/start') return `${base} — 상담·신청`
   if (pathname === '/apply') return `${base} — 수강신청`
+  if (pathname === '/consult') return `${base} — 상담 예약`
   if (pathname === '/blog') return `${base} — 입시 블로그`
   if (pathname.startsWith('/blog/')) return `${base} — 입시 블로그 글`
   if (pathname === '/admin/login') return `${base} — 관리자 로그인`
