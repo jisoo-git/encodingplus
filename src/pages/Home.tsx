@@ -3,12 +3,24 @@ import { useNavigate } from 'react-router-dom'
 import { collection, getDocs, orderBy, query } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import DarkCTAFooter from '../components/DarkCTAFooter'
+import { resolveSeminarApplyPath } from '../forms/routes'
 
 interface Banner {
   id: string; badge: string; title: string; sub: string
   bg: string; image?: string; cta: string; link: string; order: number
 }
 
+
+const SEMINAR_POPUP_IMAGE = '/banners/seminar-banner.png'
+const SEMINAR_POPUP_LINK = '/apply?type=seminar'
+const SEMINAR_POPUP_DISMISS_KEY = 'incoding:seminar-popup-dismiss-date'
+
+const getTodayKey = () => {
+  const today = new Date()
+  const month = String(today.getMonth() + 1).padStart(2, '0')
+  const day = String(today.getDate()).padStart(2, '0')
+  return `${today.getFullYear()}-${month}-${day}`
+}
 
 const FALLBACK_BANNERS: Banner[] = [
   { id: '1', image: '/banners/banner1.png', link: '/courses', badge: '', title: '', sub: '', bg: '#001233', cta: '', order: 0 },
@@ -59,7 +71,42 @@ const COURSES_PREVIEW = [
 
 export default function Home() {
   const navigate = useNavigate()
+
+
+  const openSeminarApply = async () => {
+    const seminarPath = await resolveSeminarApplyPath()
+    if (!seminarPath) {
+      alert('설명회 신청 폼이 설정되지 않았습니다.')
+      return
+    }
+    navigate(seminarPath)
+  }
+
+  const openBanner = async (_banner: Banner) => {
+    navigate('/start')
+  }
+
+  const closeSeminarPopup = () => {
+    if (hideSeminarPopupToday) {
+      try {
+        localStorage.setItem(SEMINAR_POPUP_DISMISS_KEY, getTodayKey())
+      } catch {}
+    }
+    setShowSeminarPopup(false)
+  }
+
+  const openSeminarPopup = () => {
+    if (hideSeminarPopupToday) {
+      try {
+        localStorage.setItem(SEMINAR_POPUP_DISMISS_KEY, getTodayKey())
+      } catch {}
+    }
+    navigate(SEMINAR_POPUP_LINK)
+  }
+
   const [banners, setBanners] = useState<Banner[]>(FALLBACK_BANNERS)
+  const [showSeminarPopup, setShowSeminarPopup] = useState(false)
+  const [hideSeminarPopupToday, setHideSeminarPopupToday] = useState(false)
   const [slide, setSlide] = useState(0)
   const touchStartX = useRef<number | null>(null)
   const mouseStartX = useRef<number | null>(null)
@@ -67,8 +114,21 @@ export default function Home() {
 
   useEffect(() => {
     getDocs(query(collection(db, 'banners'), orderBy('order')))
-      .then(snap => { if (!snap.empty) setBanners(snap.docs.map(d => ({ id: d.id, ...d.data() } as Banner))) })
+      .then(snap => {
+        if (snap.empty) return
+        setBanners(snap.docs.map(d => ({ id: d.id, ...d.data() } as Banner)))
+      })
       .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(SEMINAR_POPUP_DISMISS_KEY) !== getTodayKey()) {
+        setShowSeminarPopup(true)
+      }
+    } catch {
+      setShowSeminarPopup(true)
+    }
   }, [])
 
   useEffect(() => {
@@ -107,7 +167,56 @@ export default function Home() {
 
   return (
     <div>
-
+      {showSeminarPopup && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="설명회 신청 안내"
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1000,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: 24, background: 'rgba(15,23,42,0.58)',
+          }}
+        >
+          <div
+            style={{
+              width: 'min(88vw, 440px)', maxHeight: '84vh', background: '#fff', borderRadius: 12,
+              overflow: 'hidden', boxShadow: '0 24px 70px rgba(15,23,42,0.35)',
+            }}
+          >
+            <button
+              type="button"
+              onClick={openSeminarPopup}
+              aria-label="설명회 신청하기"
+              style={{ display: 'block', width: '100%', padding: 0, border: 0, background: 'transparent', cursor: 'pointer' }}
+            >
+              <img
+                src={SEMINAR_POPUP_IMAGE}
+                alt="설명회 신청 안내"
+                style={{ display: 'block', width: '100%', height: 'auto', maxHeight: 'calc(84vh - 58px)', objectFit: 'contain' }}
+              />
+            </button>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 14px', borderTop: '1px solid #e5e7eb' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: '#3f3f46', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={hideSeminarPopupToday}
+                  onChange={e => setHideSeminarPopupToday(e.target.checked)}
+                  style={{ width: 16, height: 16 }}
+                />
+                오늘은 더 보지 않기
+              </label>
+              <button
+                type="button"
+                onClick={closeSeminarPopup}
+                style={{ border: '1px solid #d4d4d8', background: '#fff', color: '#18181b', borderRadius: 8, padding: '8px 12px', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* ══ SECTION 1: 히어로 슬라이더 (이미지 전용) ══ */}
       <div style={{ background: '#fff', padding: '16px 16px 0' }}>
         <div className="md:max-w-[1100px] md:mx-auto">
@@ -123,7 +232,7 @@ export default function Home() {
             {banners.map((b, i) => (
               <div
                 key={b.id}
-                onClick={() => navigate('/start')}
+                onClick={() => openBanner(b)}
                 style={{
                   position: 'absolute', inset: 0,
                   backgroundImage: b.image ? `url(${b.image})` : undefined,
@@ -143,7 +252,7 @@ export default function Home() {
               <button
                 onClick={e => {
                   e.stopPropagation()
-                  navigate('/start')
+                  openBanner(banners[slide])
                 }}
                 className="banner-cta-btn"
                 style={{
@@ -398,7 +507,7 @@ export default function Home() {
           </div>
           <div
             className="hover-card"
-            onClick={() => navigate('/apply?type=seminar')}
+            onClick={() => openSeminarApply()}
             style={{
               background: '#fff', borderRadius: 16, overflow: 'hidden',
               border: '1px solid #c8d0dc', boxShadow: '0 1px 4px rgba(0,55,112,0.06)', cursor: 'pointer',
@@ -422,7 +531,7 @@ export default function Home() {
                 ))}
               </div>
               <button
-                onClick={e => { e.stopPropagation(); navigate('/apply?type=seminar') }}
+                onClick={e => { e.stopPropagation(); openSeminarApply() }}
                 className="hover-btn"
                 style={{ width: '100%', background: '#2563eb', color: '#fff', border: 'none', borderRadius: 10, padding: '12px 0', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
               >

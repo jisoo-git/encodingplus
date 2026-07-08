@@ -29,3 +29,12 @@
 | 다운로드 파일 | `public/files/` | `/files/파일명.xlsx` |
 
 외부 URL(네이버 등) 핫링크 차단으로 사용 불가. 파일명 공백 제거 필수.
+
+## Environment variables
+
+- `VITE_ADMIN_PASSWORD`: admin login password.
+
+## Apply settings
+
+- `settings/apply.seminarFormId`: Firestore Form document id opened from `/start`, the home seminar popup/CTA, and the `/apply?type=seminar` compatibility alias, including fallback to the legacy `forms.type = seminar` Form.
+- Leave `seminarFormId` empty only when seminar application is intentionally unavailable.
