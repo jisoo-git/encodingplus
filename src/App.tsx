@@ -5,6 +5,7 @@ import AdminLayout from './layouts/AdminLayout'
 
 import Home from './pages/Home'
 import Courses from './pages/Courses'
+import ApplyHub from './pages/ApplyHub'
 import Apply from './pages/Apply'
 import Consult from './pages/Consult'
 import Blog from './pages/Blog'
@@ -29,6 +30,7 @@ export default function App() {
         <Route element={<UserLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
+          <Route path="/start" element={<ApplyHub />} />
           <Route path="/apply" element={<Apply />} />
           <Route path="/consult" element={<Consult />} />
           <Route path="/blog" element={<Blog />} />

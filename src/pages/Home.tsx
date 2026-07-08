@@ -123,7 +123,7 @@ export default function Home() {
             {banners.map((b, i) => (
               <div
                 key={b.id}
-                onClick={() => b.link && (b.link.startsWith('http') ? window.open(b.link, '_blank') : navigate(b.link))}
+                onClick={() => navigate('/start')}
                 style={{
                   position: 'absolute', inset: 0,
                   backgroundImage: b.image ? `url(${b.image})` : undefined,
@@ -133,7 +133,7 @@ export default function Home() {
                   opacity: i === slide ? 1 : 0,
                   transition: 'opacity 0.45s ease',
                   pointerEvents: i === slide ? 'auto' : 'none',
-                  cursor: b.link ? 'pointer' : 'default',
+                  cursor: 'pointer',
                 }}
               />
             ))}
@@ -143,8 +143,7 @@ export default function Home() {
               <button
                 onClick={e => {
                   e.stopPropagation()
-                  const link = banners[slide].link
-                  if (link) link.startsWith('http') ? window.open(link, '_blank') : navigate(link)
+                  navigate('/start')
                 }}
                 className="banner-cta-btn"
                 style={{
