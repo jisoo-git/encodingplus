@@ -30,6 +30,16 @@
 
 외부 URL(네이버 등) 핫링크 차단으로 사용 불가. 파일명 공백 제거 필수.
 
+## SEO · 봇 프리렌더
+
+SPA 특성상 JS 를 실행하지 않는 크롤러(AI 크롤러·네이버 Yeti·카카오/페북 링크 스크래퍼)는 빈 페이지를 보므로, 봇에게만 서버에서 완전한 HTML 을 응답한다. 일반 방문자는 기존 SPA 그대로.
+
+- **`api/prerender.js`**: `vercel.json` 의 user-agent 조건부 rewrite 로 봇 요청만 진입. 홈·수업·블로그 목록/글·상담/신청 경로를 제목·설명·canonical·글별 OG·JSON-LD 포함 HTML 로 응답. 발행된 블로그 글 등 **공개 데이터만** Firestore REST 로 조회하고, 마크다운의 원시 HTML 은 이스케이프된다(markdown-it html:false). CDN 캐시 10분.
+- **`api/sitemap.js`**: `/sitemap.xml` rewrite. 정적 경로 + 발행(`published !== false`) 블로그 글을 합쳐 생성 — 새 글 발행 시 자동 반영 (정적 `public/sitemap.xml` 은 제거됨).
+- **봇 UA 목록** (`vercel.json`): 사람이 쓰는 인앱 브라우저를 오인하지 않도록 정확한 토큰만 매칭한다 — 카카오톡 인앱(`KAKAOTALK`)이 아니라 스크래퍼(`kakaotalk-scrap`), 네이버 앱(`NAVER`)이 아니라 검색봇(`yeti`). 새 봇 추가 시 이 원칙 유지.
+- **라우트별 메타**: JS 를 실행하는 크롤러(구글)용으로 `src/lib/analytics.ts` 가 라우트 변경 시 title·canonical·og:url/title 을 갱신한다.
+- 기타: `public/robots.txt`(`/admin` 차단), `public/llms.txt`(AI 크롤러용 사이트 요약 — 주요 페이지·연락처 변경 시 함께 갱신).
+
 ## Environment variables
 
 - `VITE_ADMIN_PASSWORD`: admin login password.
