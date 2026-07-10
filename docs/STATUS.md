@@ -57,6 +57,15 @@
 
 ---
 
+## 최근 변경 (2026-07-11)
+
+- **설명회 신청 비활성화**: `SEMINAR_APPLY_ENABLED = false` 플래그(`src/forms/routes.ts`)로 설명회 신청 기능을 코드 레벨에서 껐다. 코드는 삭제하지 않고 플래그만 `true`로 되돌리면 원상복구된다.
+  - 숨김: 홈 진입 팝업(더 이상 뜨지 않음, dismiss-key useEffect도 gating), 홈 SECTION 5 "설명회" 섹션, `/start` 허브의 "설명회 신청" 카드(부제 문구도 플래그에 맞춰 "상담 예약 · 수강 신청을 한 곳에서"로 전환)
+  - 차단: `/apply?type=seminar` 별칭 접근과 설명회 formId(`settings/apply.seminarFormId` 또는 legacy `forms.type === 'seminar'`) 직접 링크 접근 → `Apply.tsx`가 "설명회 신청이 마감되었습니다" 안내 화면으로 대체
+  - Firestore 데이터·설정은 변경하지 않음. 상세는 [specs/APPLY_SPEC.md](specs/APPLY_SPEC.md#seminar-apply-feature-flag) 참고.
+
+---
+
 ## 미완료 / 이어서 할 작업
 
 - [ ] **폼 활성화 자동 비활성화**: 한 폼 활성화 시 나머지 자동 비활성화 미구현

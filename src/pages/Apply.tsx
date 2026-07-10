@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { collection, addDoc, getDocs, getDoc, doc, serverTimestamp, query, where } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import type { Form, Question } from '../types'
-import { resolveSeminarApplyPath } from '../forms/routes'
+import { resolveSeminarApplyPath, isSeminarFormId, SEMINAR_APPLY_ENABLED } from '../forms/routes'
 import { notifySubmissionCreated } from '../lib/discordNotifications'
 
 const COURSE_OPTIONS = [
@@ -43,13 +43,20 @@ export default function Apply() {
   const [submitted, setSubmitted] = useState(false)
   const [activeForm, setActiveForm] = useState<Form | null>(null)
   const [formLoading, setFormLoading] = useState(true)
+  const [isSeminarBlocked, setIsSeminarBlocked] = useState(false)
 
   useEffect(() => {
     async function fetchForm() {
       setFormLoading(true)
       setActiveForm(null)
+      setIsSeminarBlocked(false)
       try {
         if (!formId && isSeminarAlias) {
+          // 설명회 신청 비활성화 상태에서는 ?type=seminar 별칭도 마감 안내로 대체한다.
+          if (!SEMINAR_APPLY_ENABLED) {
+            setIsSeminarBlocked(true)
+            return
+          }
           const seminarPath = await resolveSeminarApplyPath()
           if (seminarPath) navigate(seminarPath, { replace: true })
           return
@@ -59,6 +66,11 @@ export default function Apply() {
           const snap = await getDoc(doc(db, 'forms', formId))
           if (snap.exists()) {
             const form = { id: snap.id, ...(snap.data() as Omit<Form, 'id'>) }
+            // 설명회 신청 비활성화 상태에서는 formId 직접 접근(외부 링크 포함)도 차단한다.
+            if (!SEMINAR_APPLY_ENABLED && (await isSeminarFormId(formId, form.type))) {
+              setIsSeminarBlocked(true)
+              return
+            }
             if (form.type !== 'quiz') setActiveForm(form)
           }
           return
@@ -94,6 +106,35 @@ export default function Apply() {
 
   // ── 범용 폼 (섹션 = 1스텝) ──
   const [genericStep, setGenericStep] = useState(0)
+
+  // 설명회 신청 비활성화 상태 — ?type=seminar 별칭 또는 설명회 formId 직접 접근 시 마감 안내만 보여준다.
+  if (isSeminarBlocked) {
+    return (
+      <div className="md:max-w-[680px] md:mx-auto md:px-7">
+        <div style={{ padding: '64px 24px', textAlign: 'center' }}>
+          <div style={{
+            width: 64, height: 64, borderRadius: '50%', background: '#eff6ff', border: '2px solid #bfdbfe',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 26,
+          }}>📢</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: '#18181b', marginBottom: 8 }}>설명회 신청이 마감되었습니다</div>
+          <div style={{ fontSize: 14, color: '#71717a', lineHeight: 1.6, marginBottom: 28 }}>
+            현재 설명회 신청을 받고 있지 않습니다.<br />수강 신청과 상담 예약은 계속 이용하실 수 있습니다.
+          </div>
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+            <button onClick={() => navigate('/')}
+              style={{ padding: '13px 20px', border: '1px solid #c8d0dc', borderRadius: 11, background: '#fff', fontSize: 15, fontWeight: 600, color: '#52525b', cursor: 'pointer' }}>
+              홈으로
+            </button>
+            <button onClick={() => navigate('/start')}
+              style={{ padding: '13px 20px', border: 'none', borderRadius: 11, background: '#2563eb', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+              신청 허브로
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const genericSections = activeForm?.sections ?? []
   const currentGenericSection = genericSections[genericStep]
   const currentGenericQuestions = currentGenericSection?.questions ?? []

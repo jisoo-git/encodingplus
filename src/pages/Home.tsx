@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { collection, getDocs, orderBy, query } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import DarkCTAFooter from '../components/DarkCTAFooter'
-import { resolveSeminarApplyPath } from '../forms/routes'
+import { resolveSeminarApplyPath, SEMINAR_APPLY_ENABLED } from '../forms/routes'
 
 interface Banner {
   id: string; badge: string; title: string; sub: string
@@ -122,6 +122,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    if (!SEMINAR_APPLY_ENABLED) return
     try {
       if (localStorage.getItem(SEMINAR_POPUP_DISMISS_KEY) !== getTodayKey()) {
         setShowSeminarPopup(true)
@@ -167,7 +168,7 @@ export default function Home() {
 
   return (
     <div>
-      {showSeminarPopup && (
+      {SEMINAR_APPLY_ENABLED && showSeminarPopup && (
         <div
           role="dialog"
           aria-modal="true"
@@ -495,7 +496,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ══ SECTION 5: 설명회 ══ */}
+      {/* ══ SECTION 5: 설명회 (SEMINAR_APPLY_ENABLED가 false면 섹션 전체 숨김) ══ */}
+      {SEMINAR_APPLY_ENABLED && (
       <div style={{ background: '#fafafa', padding: '52px 0' }}>
         <div className="md:max-w-[1100px] md:mx-auto" style={{ padding: '0 18px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 18 }}>
@@ -541,6 +543,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+      )}
 
       {/* ══ SECTION 6: 상담 CTA + 푸터 ══ */}
       <DarkCTAFooter />

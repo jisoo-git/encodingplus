@@ -41,6 +41,11 @@
 - Seminar application Forms are opened canonically by `/apply?formId={formId}`. `/apply?type=seminar` may be used as a public compatibility alias that resolves through `settings/apply.seminarFormId`, with fallback to the legacy `forms.type = seminar` Form.
 - `quiz` Forms are reserved/paused and are excluded from the public active Form rule.
 
+## Seminar apply feature flag
+
+- `SEMINAR_APPLY_ENABLED` (`src/forms/routes.ts`) is a hard on/off switch for seminar application. When `false`: `resolveSeminarApplyPath()` returns `null` without touching Firestore; the Home popup and "설명회" section, the `/start` hub card, are all hidden; `?type=seminar` and any direct `?formId=` link that resolves to the configured/legacy seminar Form show a "설명회 신청이 마감되었습니다" notice instead of the form (via `isSeminarFormId()` in `Apply.tsx`).
+- To re-enable, flip `SEMINAR_APPLY_ENABLED` back to `true` in `src/forms/routes.ts` — no other code changes needed.
+
 ## Coupling
 
 - Form editing lives in `FormBuilder.tsx` and `AdminFormList.tsx`.

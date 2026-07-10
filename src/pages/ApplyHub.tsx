@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { resolveSeminarApplyPath } from '../forms/routes'
+import { resolveSeminarApplyPath, SEMINAR_APPLY_ENABLED } from '../forms/routes'
 
 // 상담·신청 허브 — 흩어져 있던 세 흐름(상담 예약·수강 신청·설명회 신청)의 단일 진입점.
 // 각 카드는 기존 페이지로 그대로 연결한다(슬롯 예약·수강신청 폼·설명회 폼은 손대지 않음).
@@ -23,6 +23,9 @@ const CARDS: HubCard[] = [
   { id: 'seminar', icon: '🎤', title: '설명회 신청', desc: '설명회를 통해 프로그램과 입시 전략을 안내드립니다.', cta: '신청하기', to: '/apply', grad: 'linear-gradient(135deg,#1d4ed8,#1e40af)' },
 ]
 
+// SEMINAR_APPLY_ENABLED가 false면 설명회 신청 카드는 목록에서 제외한다.
+const VISIBLE_CARDS = SEMINAR_APPLY_ENABLED ? CARDS : CARDS.filter(card => card.id !== 'seminar')
+
 export default function ApplyHub() {
   const navigate = useNavigate()
 
@@ -45,12 +48,14 @@ export default function ApplyHub() {
         <div style={{ textAlign: 'center', padding: '8px 0 24px' }}>
           <div style={{ fontSize: 13, fontWeight: 800, color: '#2563eb', letterSpacing: '0.04em' }}>상담·신청</div>
           <div style={{ fontSize: 22, fontWeight: 800, color: '#18181b', marginTop: 8, letterSpacing: '-0.02em' }}>원하시는 방법을 선택하세요</div>
-          <div style={{ fontSize: 14, color: '#71717a', marginTop: 8, lineHeight: 1.6 }}>상담 예약 · 수강 신청 · 설명회 신청을 한 곳에서</div>
+          <div style={{ fontSize: 14, color: '#71717a', marginTop: 8, lineHeight: 1.6 }}>
+            {SEMINAR_APPLY_ENABLED ? '상담 예약 · 수강 신청 · 설명회 신청을 한 곳에서' : '상담 예약 · 수강 신청을 한 곳에서'}
+          </div>
         </div>
 
-        {/* 카드 격자 — 모바일 1열, 데스크톱 3열 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {CARDS.map(card => (
+        {/* 카드 격자 — 모바일 1열, 데스크톱 3열(설명회 비활성화 시 2열) */}
+        <div className={`grid grid-cols-1 ${SEMINAR_APPLY_ENABLED ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
+          {VISIBLE_CARDS.map(card => (
             <button
               key={card.id}
               onClick={() => openCard(card)}
