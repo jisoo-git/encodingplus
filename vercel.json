@@ -1,5 +1,19 @@
 {
-  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }],
+  "rewrites": [
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(googlebot|bingbot|yeti|daumoa|kakaotalk-scrap|slurp|duckduckbot|baiduspider|yandexbot|facebookexternalhit|twitterbot|slackbot|discordbot|telegrambot|whatsapp|linkedinbot|gptbot|oai-searchbot|chatgpt-user|claudebot|claude-web|anthropic-ai|perplexitybot|ccbot|google-extended|applebot|amazonbot|bytespider|petalbot).*"
+        }
+      ],
+      "destination": "/api/prerender?path=/:path*"
+    },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/(index.html|sw.js|registerSW.js|manifest.webmanifest)",

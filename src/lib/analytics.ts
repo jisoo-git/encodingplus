@@ -28,10 +28,21 @@ export function resolvePageTitle(pathname: string): string {
   return base
 }
 
+// 라우트 변경 시 canonical·OG 태그를 현재 경로로 갱신 (JS 를 렌더링하는 크롤러용 SEO 보정.
+// JS 를 실행하지 않는 봇은 vercel.json rewrite → api/prerender.js 가 올바른 태그를 응답한다)
+function syncSeoTags(pathname: string, title: string): void {
+  const url = window.location.origin + pathname
+  document.querySelector('link[rel="canonical"]')?.setAttribute('href', url)
+  document.querySelector('meta[property="og:url"]')?.setAttribute('content', url)
+  document.querySelector('meta[property="og:title"]')?.setAttribute('content', title)
+  document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', title)
+}
+
 // 라우트 변경 시 호출. document.title 도 함께 갱신해 브라우저 탭·GA 제목을 일치시킨다.
 export function trackPageView(pathname: string, search = ''): void {
   const title = resolvePageTitle(pathname)
   document.title = title
+  syncSeoTags(pathname, title)
 
   const gtag = getGtag()
   if (!gtag) return
