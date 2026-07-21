@@ -71,6 +71,16 @@
 
 ---
 
+## 최근 변경 (2026-07-21)
+
+- **유입경로(UTM) 추적 추가**: 광고 랜딩 URL의 `utm_*` 파라미터·외부 리퍼러를 첫 방문 시 캡처(`src/lib/attribution.ts`, sessionStorage first-touch)해 상담 예약(`consultations.attribution`)과 수강신청·범용 폼 제출(`submissions.attribution`)에 저장. 목적: 광고 채널 ↔ 문의 건 단위 연결(상담로그 유입경로 세분화).
+  - Discord 알림에 "유입경로" 필드 추가 (상담 예약·수강신청·범용 제출 모두)
+  - GA4 전환 이벤트 `generate_lead` 전송 (`analytics.ts` `trackLead` — consult/enrollment/application 구분)
+  - 관리자 상담 예약 목록에 유입 한 줄 표시 (`AdminConsultations`)
+  - 필드 구조는 [DATA-MODEL.md](DATA-MODEL.md) 참고. 광고 URL에 UTM을 안 붙이면 필드가 남지 않으므로 채널별 랜딩 URL에 UTM 부착 필요
+
+---
+
 ## 미완료 / 이어서 할 작업
 
 - [ ] **Firestore 보안 규칙 강화**: 현재 전체 공개(`allow read, write: if true`) — 신청·상담 개인정보가 외부에서 읽기/쓰기 가능. 관리자 인증(Firebase Auth) 도입과 함께 컬렉션별 규칙 필요

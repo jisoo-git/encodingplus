@@ -1,4 +1,5 @@
 import type { Timestamp } from 'firebase/firestore'
+import type { Attribution } from '../lib/attribution'
 
 /** 요일별 예약 가능 시간. start~end는 정각 시작·end 미포함 (start:10,end:16 → 10~15시). */
 export interface DaySchedule {
@@ -28,6 +29,7 @@ export interface ConsultDoc {
   phone?: string
   grade?: string // 학생 학년 (예: 중3)
   status?: ConsultStatus
+  attribution?: Attribution // 유입경로 (booking, 캡처된 경우만 — 없으면 직접 방문/미상)
   createdAt?: Timestamp
 }
 

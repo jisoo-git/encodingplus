@@ -6,6 +6,8 @@ import { fetchConfig, fetchDayDocs, bookSlot } from '../consult/api'
 import { dateStrip, hoursForDate, isBookable, ymd, type DateOption } from '../consult/slots'
 import { WEEKDAY_LABELS, type ConsultConfig } from '../consult/types'
 import { notifySubmissionCreated } from '../lib/discordNotifications'
+import { getAttribution, formatAttribution } from '../lib/attribution'
+import { trackLead } from '../lib/analytics'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', border: '1px solid #c8d0dc', borderRadius: 10,
@@ -98,7 +100,9 @@ export default function Consult() {
     setSubmitting(true)
     setNotice(null)
     try {
-      await bookSlot({ date: selectedDate, hour: selectedHour, name, phone, grade })
+      const attribution = getAttribution()
+      await bookSlot({ date: selectedDate, hour: selectedHour, name, phone, grade, attribution })
+      trackLead('consult')
       await notifySubmissionCreated({
         kind: 'consultation',
         title: '\uC0C1\uB2F4 \uC608\uC57D',
@@ -107,6 +111,7 @@ export default function Consult() {
         grade,
         date: selectedDate,
         hour: selectedHour,
+        ...(attribution ? { detail: { \uC720\uC785\uACBD\uB85C: formatAttribution(attribution) } } : {}),
       })
       setSubmitted(true)
     } catch (e) {

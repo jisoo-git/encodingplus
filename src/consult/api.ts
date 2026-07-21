@@ -7,6 +7,7 @@ import {
 import { db } from '../firebase/config'
 import { DEFAULT_CONFIG, type ConsultConfig, type ConsultDoc } from './types'
 import { slotKey } from './slots'
+import type { Attribution } from '../lib/attribution'
 
 const COL = 'consultations'
 const CONFIG_REF = () => doc(db, 'settings', 'consultation')
@@ -53,10 +54,11 @@ export interface BookInput {
   name: string
   phone: string
   grade: string
+  attribution?: Attribution | null // 유입경로 (없으면 필드 자체를 저장하지 않음)
 }
 
 /** 예약 — 트랜잭션으로 원자적 생성. 이미 점유면 SLOT_TAKEN throw. */
-export async function bookSlot({ date, hour, name, phone, grade }: BookInput): Promise<string> {
+export async function bookSlot({ date, hour, name, phone, grade, attribution }: BookInput): Promise<string> {
   const id = slotKey(date, hour)
   const ref = doc(db, COL, id)
   await runTransaction(db, async tx => {
@@ -70,6 +72,7 @@ export async function bookSlot({ date, hour, name, phone, grade }: BookInput): P
       phone: phone.trim(),
       grade: grade.trim(),
       status: 'new',
+      ...(attribution ? { attribution } : {}),
       createdAt: serverTimestamp(),
     })
   })

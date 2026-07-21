@@ -5,6 +5,8 @@ import { db } from '../firebase/config'
 import type { Form, Question } from '../types'
 import { resolveSeminarApplyPath, isSeminarFormId, SEMINAR_APPLY_ENABLED } from '../forms/routes'
 import { notifySubmissionCreated } from '../lib/discordNotifications'
+import { getAttribution, formatAttribution } from '../lib/attribution'
+import { trackLead } from '../lib/analytics'
 
 const COURSE_OPTIONS = [
   { name: '입시 단기특강', desc: '특별전형 + 일반전형 병행 · 토요일 6h + 수요일 1h' },
@@ -193,10 +195,12 @@ export default function Apply() {
           .map(q => [q.label, Array.isArray(answers[q.id]) ? (answers[q.id] as string[]).join(', ') : answers[q.id]])
       )
 
+      const attribution = getAttribution()
       await addDoc(collection(db, 'submissions'), {
         ...(name   && { name }),
         ...(phone  && { phone }),
         ...(school && { school }),
+        ...(attribution ? { attribution } : {}),
         submittedAt: serverTimestamp(),
         status: 'new',
         formId: activeForm?.id,
@@ -207,6 +211,7 @@ export default function Apply() {
             .map(q => [q.label, Array.isArray(answers[q.id]) ? (answers[q.id] as string[]).join(', ') : answers[q.id]])
         ),
       })
+      trackLead(activeForm?.type === 'enrollment' ? 'enrollment' : 'application')
       await notifySubmissionCreated({
         kind: activeForm?.type === 'enrollment' ? 'enrollment' : 'application',
         title: activeForm?.title ?? '\uC2E0\uCCAD',
@@ -214,7 +219,7 @@ export default function Apply() {
         phone,
         school,
         formTitle: activeForm?.title,
-        detail,
+        detail: attribution ? { ...detail, \uC720\uC785\uACBD\uB85C: formatAttribution(attribution) } : detail,
       })
       setSubmitted(true)
     } catch {
@@ -249,6 +254,7 @@ export default function Apply() {
           .filter(q => q.type !== 'info' && answers[q.id] !== undefined)
           .map(q => [q.label, Array.isArray(answers[q.id]) ? (answers[q.id] as string[]).join(', ') : answers[q.id]])
       )
+      const attribution = getAttribution()
       await addDoc(collection(db, 'submissions'), {
         name,
         course,
@@ -258,7 +264,9 @@ export default function Apply() {
         status: 'new',
         formId: activeForm?.id,
         detail,
+        ...(attribution ? { attribution } : {}),
       })
+      trackLead('enrollment')
       await notifySubmissionCreated({
         kind: 'enrollment',
         title: '\uC218\uAC15\uC2E0\uCCAD',
@@ -267,7 +275,7 @@ export default function Apply() {
         school,
         course: course ?? undefined,
         formTitle: activeForm?.title,
-        detail,
+        detail: attribution ? { ...detail, \uC720\uC785\uACBD\uB85C: formatAttribution(attribution) } : detail,
       })
       setSubmitted(true)
     } catch {

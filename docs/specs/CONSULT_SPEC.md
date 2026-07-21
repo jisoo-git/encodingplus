@@ -42,6 +42,7 @@
 4. **슬롯 칩 격자**: 점유(booking/block)·**지난 시간**(오늘 한정, 슬롯 시작이 현재 이전)은 disabled.
 5. 빈 칩 선택 → **이름·학년·연락처** 입력(학년=`초6 미만·초6~고3·기타` 드롭다운, 셋 다 필수) → `예약하기`(트랜잭션).
 6. 성공 시 완료 모달(기존 `Apply.tsx` 패턴 재사용). `SLOT_TAKEN`이면 안내 + 슬롯 갱신.
+7. 예약 문서에 **유입경로(`attribution`)** 를 함께 저장한다 — 첫 방문 시 `src/lib/attribution.ts`가 캡처한 utm·리퍼러(없으면 필드 생략, [DATA-MODEL.md](../DATA-MODEL.md) 참조). 성공 시 GA4 `generate_lead` 이벤트를 전송하고, Discord 알림에 "유입경로" 필드를 포함한다.
 
 - 스타일은 `Apply.tsx`의 칩/버튼 톤(파랑 `#2563eb`, 테두리 `#c8d0dc`)을 따른다.
 - 타임존은 **KST(브라우저 로컬)** 가정. 날짜 문자열은 로컬 `YYYY-MM-DD`(`toISOString` UTC 금지 — 야간 off-by-one 방지).
@@ -52,7 +53,7 @@
 
 | 섹션 | 동작 | 데이터 |
 |------|------|--------|
-| 예약 목록 | 날짜별 그룹, 이름·연락처·상태(new/confirmed/done) 변경, **예약 취소**(문서 삭제) | `consultations` `kind:'booking'` |
+| 예약 목록 | 날짜별 그룹, 이름·연락처·유입경로·상태(new/confirmed/done) 변경, **예약 취소**(문서 삭제) | `consultations` `kind:'booking'` |
 | 시간 차단 | 날짜/시간 선택 후 **차단**(`kind:'block'` 생성)·**해제**(삭제) | `consultations` `kind:'block'` |
 | 스케줄 설정 | 요일별 open·start·end·advanceDays·enabled 편집 → 저장 | `settings/consultation` |
 
@@ -82,6 +83,7 @@
 | `src/consult/types.ts` | `ConsultConfig`·`DaySchedule`·`ConsultDoc`(booking/block)·`ConsultStatus` |
 | `src/consult/slots.ts` | 순수 함수 — `ymd`·`slotKey`·`hoursForDate`·`dateStrip`·`isBookable`. Firestore 의존 없음 |
 | `src/consult/api.ts` | Firestore I/O — `fetchConfig`·`saveConfig`·`fetchDayDocs`·`fetchAll`·`bookSlot`(트랜잭션)·`cancelSlot`·`blockSlot`·`unblockSlot` |
+| `src/lib/attribution.ts` | 유입경로 캡처(sessionStorage first-touch)·조회·한 줄 표기 — 상담 예약·수강신청 공용 |
 | `src/pages/Consult.tsx` | 사용자 예약 페이지 |
 | `src/pages/admin/AdminConsultations.tsx` | 관리자 3섹션 페이지 |
 

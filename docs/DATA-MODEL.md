@@ -8,9 +8,9 @@ Firestore 컬렉션별 문서 필드 구조. 용어 정의는 [CONTEXT.md](../CO
 |--------|---------|
 | `banners` | `{ badge, title, sub, bg, image?, cta, link, order }` |
 | `blogPosts` | `{ tag, title, excerpt, coverImage, content: string, date, read, pinned?, published?, views? }` |
-| `submissions` | enrollment: `{ name, course, school, phone, formId, status, submittedAt, detail }` / 범용: `{ formId, formTitle, name?, phone?, school?, status, submittedAt, detail }` |
+| `submissions` | enrollment: `{ name, course, school, phone, formId, status, submittedAt, detail, attribution? }` / 범용: `{ formId, formTitle, name?, phone?, school?, status, submittedAt, detail, attribution? }` |
 | `forms` | `{ title, description, type, isActive, createdAt, sections: Section[] }` |
-| `consultations` | 슬롯 점유. 문서 ID=`YYYY-MM-DD_HH`. `{ kind: 'booking'\|'block', date, hour, name?, phone?, grade?, status?, createdAt }` (`grade`=학생 학년) |
+| `consultations` | 슬롯 점유. 문서 ID=`YYYY-MM-DD_HH`. `{ kind: 'booking'\|'block', date, hour, name?, phone?, grade?, status?, attribution?, createdAt }` (`grade`=학생 학년) |
 | `settings/consultation` | 상담 예약 설정(관리자 편집). `{ enabled, advanceDays, weekly: { 0..6: { open, start, end } } }` |
 | `responses` | quiz 전용, **보류** — [CONTEXT.md](../CONTEXT.md) "보류" 섹션 참조 |
 
@@ -22,6 +22,7 @@ Firestore 컬렉션별 문서 필드 구조. 용어 정의는 [CONTEXT.md](../CO
 - `forms.type`: `'enrollment' | 'quiz'` (`src/types/index.ts`). `quiz`는 보류 상태
 - `forms`: REST API로 직접 생성 시 **`createdAt` 필수** — `useForms`가 `orderBy('createdAt')` 사용, 없으면 목록에 안 뜸
 - `consultations`: **문서 존재 = 그 시간 점유**. 문서 ID가 슬롯 키(`날짜_시`)라 예약/차단은 트랜잭션으로 원자적 생성, 취소/해제는 문서 삭제. 조회는 `where('date','==',날짜)` 단일 필드 → 복합 인덱스 불필요. 상세는 [specs/CONSULT_SPEC.md](specs/CONSULT_SPEC.md)
+- `attribution` (consultations booking·submissions 공통): 유입경로. `{ source, medium, campaign?, content?, term?, referrer?, landing? }`. 첫 방문 시 `src/lib/attribution.ts`가 URL의 `utm_*`(또는 외부 리퍼러)를 sessionStorage에 캡처(first-touch)해 제출 시 저장. **필드 없음 = 직접 방문 또는 캡처 불가** — 광고 URL에 UTM을 붙여야 채널이 남는다
 
 ## Resolved FormType rule: seminar application
 

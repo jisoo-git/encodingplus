@@ -38,6 +38,13 @@ function syncSeoTags(pathname: string, title: string): void {
   document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', title)
 }
 
+// 전환(상담 예약·수강신청) 완료 시 호출. GA4 표준 generate_lead 이벤트 — 채널별 전환 집계용.
+export function trackLead(leadType: 'consult' | 'enrollment' | 'application'): void {
+  const gtag = getGtag()
+  if (!gtag) return
+  gtag('event', 'generate_lead', { lead_type: leadType, send_to: GA_MEASUREMENT_ID })
+}
+
 // 라우트 변경 시 호출. document.title 도 함께 갱신해 브라우저 탭·GA 제목을 일치시킨다.
 export function trackPageView(pathname: string, search = ''): void {
   const title = resolvePageTitle(pathname)

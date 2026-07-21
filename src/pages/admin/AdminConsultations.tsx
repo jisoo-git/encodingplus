@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { fetchAll, fetchConfig, saveConfig, removeSlot, blockSlot, updateStatus } from '../../consult/api'
 import { hoursForDate, ymd } from '../../consult/slots'
 import { WEEKDAY_LABELS, type ConsultConfig, type ConsultDoc, type ConsultStatus } from '../../consult/types'
+import { formatAttribution } from '../../lib/attribution'
 
 type Section = 'bookings' | 'blocks' | 'schedule'
 
@@ -146,6 +147,11 @@ export default function AdminConsultations() {
                           </div>
                           <span style={{ fontSize: 11, fontWeight: 700, color: meta.color, background: meta.bg, padding: '3px 8px', borderRadius: 6 }}>{meta.label}</span>
                         </div>
+                        {b.attribution && (
+                          <div style={{ fontSize: 12, color: '#71717a', marginBottom: 8 }}>
+                            유입: {formatAttribution(b.attribution)}
+                          </div>
+                        )}
                         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                           {STATUS_ORDER.map(s => (
                             <button key={s} onClick={() => handleStatus(b.id, s)}
