@@ -22,6 +22,15 @@ function mdLabel(date: string) {
   return `${Number(m)}/${Number(d)}`
 }
 
+const PHONE_RE = /^\d{3}-\d{4}-\d{4}$/
+
+function formatPhone(raw: string) {
+  const digits = raw.replace(/\D/g, '').slice(0, 11)
+  if (digits.length <= 3) return digits
+  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`
+  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`
+}
+
 export default function Consult() {
   const navigate = useNavigate()
 
@@ -91,12 +100,14 @@ export default function Consult() {
     : []
   const selectedDateObj = selectedDate ? new Date(`${selectedDate}T00:00:00`) : undefined
 
+  const phoneValid = PHONE_RE.test(phone)
+
   const canSubmit =
     !!selectedDate && selectedHour !== null &&
-    name.trim() !== '' && grade !== '' && phone.trim() !== '' && !submitting
+    name.trim() !== '' && grade !== '' && phoneValid && !submitting
 
   const handleSubmit = async () => {
-    if (!selectedDate || selectedHour === null) return
+    if (!selectedDate || selectedHour === null || !PHONE_RE.test(phone)) return
     setSubmitting(true)
     setNotice(null)
     try {
@@ -221,10 +232,16 @@ export default function Consult() {
                 </div>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: '#52525b', marginBottom: 6 }}>연락처</div>
-                  <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="010-0000-0000"
+                  <input type="tel" value={phone} onChange={e => setPhone(formatPhone(e.target.value))} placeholder="010-0000-0000"
+                    inputMode="numeric" maxLength={13}
                     style={inputStyle}
                     onFocus={e => { e.target.style.borderColor = '#2563eb' }}
                     onBlur={e => { e.target.style.borderColor = '#c8d0dc' }} />
+                  {phone !== '' && !phoneValid && (
+                    <div style={{ marginTop: 6, fontSize: 12, color: '#dc2626', fontWeight: 600 }}>
+                      연락처를 010-0000-0000 형식으로 입력해주세요.
+                    </div>
+                  )}
                 </div>
               </div>
 
