@@ -57,8 +57,33 @@
 
 ---
 
+## 최근 변경 (2026-07-11)
+
+- **설명회 신청 비활성화**: `SEMINAR_APPLY_ENABLED = false` 플래그(`src/forms/routes.ts`)로 설명회 신청 기능을 코드 레벨에서 껐다. 코드는 삭제하지 않고 플래그만 `true`로 되돌리면 원상복구된다.
+  - 숨김: 홈 진입 팝업(더 이상 뜨지 않음, dismiss-key useEffect도 gating), 홈 SECTION 5 "설명회" 섹션, `/start` 허브의 "설명회 신청" 카드(부제 문구도 플래그에 맞춰 "상담 예약 · 수강 신청을 한 곳에서"로 전환)
+  - 차단: `/apply?type=seminar` 별칭 접근과 설명회 formId(`settings/apply.seminarFormId` 또는 legacy `forms.type === 'seminar'`) 직접 링크 접근 → `Apply.tsx`가 "설명회 신청이 마감되었습니다" 안내 화면으로 대체
+  - Firestore 데이터·설정은 변경하지 않음. 상세는 [specs/APPLY_SPEC.md](specs/APPLY_SPEC.md#seminar-apply-feature-flag) 참고.
+- **네이버 블로그 글 2건 이전**: "디미고 도전을 앞둔 중3에게", "디미고 특별전형 준비, 프로젝트 발표수업" — `blogPosts` 등록, 이미지는 `public/blog/dimigo-challenge-*`, `public/blog/dimigo-project-*`. 본문 마크다운 링크 스타일(`.md-preview a`) 추가.
+- **SEO 개선 (봇 프리렌더 + 동적 sitemap)**: SPA 라서 JS 미실행 크롤러(AI 크롤러·네이버 Yeti·카카오 스크래퍼)에 본문이 안 보이던 문제 해결. 상세는 [OPERATIONS.md](OPERATIONS.md#seo--봇-프리렌더) 참고.
+  - `api/prerender.js`: 봇 user-agent 전용 완전한 HTML(제목·본문·글별 OG·JSON-LD) 응답. 일반 방문자는 SPA 그대로. 발행 글 등 공개 데이터만 조회.
+  - `api/sitemap.js`: 발행 블로그 글 포함 동적 sitemap (`/sitemap.xml` rewrite, 정적 파일 제거)
+  - `index.html` 학원 JSON-LD, `analytics.ts` 라우트별 canonical/OG 동기화, `robots.txt`에 `/admin` 차단, `llms.txt` 추가
+
+---
+
+## 최근 변경 (2026-07-21)
+
+- **유입경로(UTM) 추적 추가**: 광고 랜딩 URL의 `utm_*` 파라미터·외부 리퍼러를 첫 방문 시 캡처(`src/lib/attribution.ts`, sessionStorage first-touch)해 상담 예약(`consultations.attribution`)과 수강신청·범용 폼 제출(`submissions.attribution`)에 저장. 목적: 광고 채널 ↔ 문의 건 단위 연결(상담로그 유입경로 세분화).
+  - Discord 알림에 "유입경로" 필드 추가 (상담 예약·수강신청·범용 제출 모두)
+  - GA4 전환 이벤트 `generate_lead` 전송 (`analytics.ts` `trackLead` — consult/enrollment/application 구분)
+  - 관리자 상담 예약 목록에 유입 한 줄 표시 (`AdminConsultations`)
+  - 필드 구조는 [DATA-MODEL.md](DATA-MODEL.md) 참고. 광고 URL에 UTM을 안 붙이면 필드가 남지 않으므로 채널별 랜딩 URL에 UTM 부착 필요
+
+---
+
 ## 미완료 / 이어서 할 작업
 
+- [ ] **Firestore 보안 규칙 강화**: 현재 전체 공개(`allow read, write: if true`) — 신청·상담 개인정보가 외부에서 읽기/쓰기 가능. 관리자 인증(Firebase Auth) 도입과 함께 컬렉션별 규칙 필요
 - [ ] **폼 활성화 자동 비활성화**: 한 폼 활성화 시 나머지 자동 비활성화 미구현
 - [ ] **이미지 업로드 UI**: 현재 로컬 `public/` 폴더 + 경로 입력 방식. 관리자 UI 업로드 기능 미구현
 - [ ] **Firestore 구 배너 정리**: 이미지 전용 전환 전 등록된 구 배너(image 필드 없음) 삭제 필요
@@ -67,9 +92,9 @@
 
 ## 참고
 
-- 디자인 가이드: `plan/DESIGN.md`
-- 파일 지도: `plan/PROJECT_MAP.md`
-- 페이지 스펙: `plan/specs/`
+- 디자인 가이드: `docs/design/DESIGN.md`
+- 파일 지도: `docs/PROJECT_MAP.md`
+- 페이지 스펙: `docs/specs/`
 - GitHub: `https://github.com/archers7727/incodingplushome`
 - 배포 URL: TBD (선생님 Vercel 연결 후 업데이트)
 - Firebase 설정: `src/firebase/config.ts`

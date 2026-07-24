@@ -3,7 +3,7 @@
 > 각 파일이 무엇인지 한눈에 파악하기 위한 총정리.
 > 새 세션에서 모르는 게 있으면 이 파일부터 확인할 것.
 
----
+
 
 ## 루트
 
@@ -15,7 +15,7 @@
 | `vite.config.ts` | Vite 설정 (PWA 플러그인 포함) |
 | `package.json` | 의존성 목록 |
 
----
+
 
 ## src/
 
@@ -24,7 +24,7 @@
 |------|------|
 | `main.tsx` | React 앱 마운트, StrictMode |
 | `App.tsx` | 라우터 정의 (모든 페이지 경로 여기서 관리) |
-| `index.css` | 전역 CSS — body 스타일, hover-card, hover-btn, nav-btn, dark-cta-bottom, apply-btn-area, step-indicator, course-sheet-overlay/panel, blog-list-bottom |
+| `index.css` | 전역 CSS — body 스타일, hover card, hover btn, nav btn, dark cta bottom, apply btn area, step indicator, course sheet overlay/panel, blog list bottom |
 | `App.css` | 미사용 (삭제 가능) |
 
 ### src/types/
@@ -35,12 +35,19 @@
 ### 루트 (src/)
 | 파일 | 역할 |
 |------|------|
-| `vite-env.d.ts` | Vite 클라이언트 타입 선언 (`/// <reference types="vite/client" />`) |
+| `vite env.d.ts` | Vite 클라이언트 타입 선언 (`/// <reference types="vite/client" />`) |
 
 ### src/firebase/
 | 파일 | 역할 |
 |------|------|
 | `config.ts` | Firebase 초기화 + `db` export (Firestore) |
+
+### src/consult/  (상담 예약)
+| 파일 | 역할 |
+|------|------|
+| `types.ts` | `ConsultConfig`·`DaySchedule`·`ConsultDoc`·`ConsultStatus` + `DEFAULT_CONFIG`(초기 스케줄) |
+| `slots.ts` | 순수 슬롯 계산(Firestore 무관) — `ymd`·`slotKey`·`hoursForDate`·`dateStrip`·`isBookable` |
+| `api.ts` | Firestore I/O — `fetchConfig`·`saveConfig`·`fetchDayDocs`·`fetchAll`·`bookSlot`(트랜잭션)·`blockSlot`·`removeSlot`·`updateStatus` |
 
 ### src/hooks/
 | 파일 | 역할 |
@@ -65,7 +72,7 @@
 ### src/components/builder/
 | 파일 | 역할 |
 |------|------|
-| `SortableQuestion.tsx` | 드래그 가능한 질문 카드 컴포넌트 (dnd-kit 사용) |
+| `SortableQuestion.tsx` | 드래그 가능한 질문 카드 컴포넌트 (dnd kit 사용) |
 | `QuestionEditor.tsx` | 질문 타입별 편집 UI (단답/장문/객관식/체크박스/OX/드롭다운/날짜/숫자/PDF) |
 
 ### src/components/ui/
@@ -78,21 +85,24 @@
 | 파일 | 역할 |
 |------|------|
 | `Home.tsx` | 홈 — 배너 슬라이더(Firestore/FALLBACK), Stats, WHY 섹션, 개설강좌 2개 미리보기, 다크 CTA |
-| `Courses.tsx` | 수업소개 — CourseFullCard 전면 표시(상세설명·수업구성·수업시간·수강료·CTA), 다크 CTA |
+| `Courses.tsx` | 수업소개 — CourseFullCard 전면 표시(상세설명·수업구성·수업시간·CTA / 수강료 미노출), 다크 CTA |
+| `ApplyHub.tsx` | 상담·신청 허브(`/start`) — 상담예약·수강신청·설명회 3카드 단일 진입점(각각 `/consult`·`/apply`·`/apply?formId={formId}`로 연결하며 `/apply?type=seminar` 별칭도 지원). 이미지 카드(현재 그라데이션+아이콘 플레이스홀더) |
 | `Apply.tsx` | 수강신청 — Firestore 활성 폼 로드, 스텝별 폼 렌더, 제출 |
+| `Consult.tsx` | 상담 예약 — react day picker 월 캘린더+시간 격자, 점유/지난 시간 disabled, 트랜잭션 예약 |
 | `Blog.tsx` | 블로그 목록 — 카드 그리드(gridAutoRows 1fr, height 100%), 고정글 별도 섹션, FALLBACK_POSTS 내보냄 |
-| `BlogPost.tsx` | 블로그 상세 — 대표이미지, 해시태그pill, 본문 마크다운 렌더(react-markdown), 밝은 CTA |
+| `BlogPost.tsx` | 블로그 상세 — 대표이미지, 해시태그pill, 본문 마크다운 렌더(react markdown), 밝은 CTA |
 | `FormPage.tsx` | 외부 폼 페이지 (별도 경로, 관리자 아님) |
 
 ### src/pages/admin/
 | 파일 | 역할 |
 |------|------|
 | `AdminLogin.tsx` | 관리자 로그인 페이지 (/admin) |
-| `AdminSubmissions.tsx` | 신청현황 — 목록 + 상태(새신청/확인완료/상담완료) 변경, 바텀시트 상세, 토스트 피드백 |
+| `AdminSubmissions.tsx` | 신청현황 — submissions + **상담예약(consultations) 통합 목록**, 유형 배지·상담예약 필터, 상태(새신청/확인완료/상담완료) 변경(출처별 라우팅), 바텀시트 상세 |
+| `AdminConsultations.tsx` | 상담 예약 관리 — 예약목록(취소·상태)/시간차단/스케줄설정 3섹션 |
 | `AdminBanners.tsx` | 홍보배너 관리 — CRUD, 순서 변경(dirty state), 바텀시트 편집폼 |
 | `AdminBlogList.tsx` | 블로그 목록 관리 — Firestore 글 목록, 수정/삭제 버튼 |
 | `AdminBlogWrite.tsx` | 블로그 글 작성/수정 — 마크다운 에디터(작성/미리보기 탭), 태그/제목/요약/대표이미지 입력, 초안/발행 관리 |
-| `FormBuilder.tsx` | 폼 편집기 — 섹션/질문 CRUD, DnD 순서 변경(dnd-kit), 질문 타입별 설정 |
+| `FormBuilder.tsx` | 폼 편집기 — 섹션/질문 CRUD, DnD 순서 변경(dnd kit), 질문 타입별 설정 |
 | `Dashboard.tsx` | 미사용 대시보드 (레거시) |
 | `Responses.tsx` | 미사용 응답 페이지 (레거시) |
 
@@ -108,7 +118,7 @@
 | `hero.png` | 미사용 히어로 이미지 |
 | `react.svg`, `vite.svg` | 미사용 기본 로고 |
 
----
+
 
 ## docs/  (읽는 문서)
 
@@ -117,16 +127,17 @@
 | `../CONTEXT.md` | **용어 사전(글로서리)** — 도메인 용어 정의. 루트에 위치 |
 | `PROJECT_MAP.md` | **이 파일** — 전체 파일 지도 |
 | `STATUS.md` | 작업 현황 — 완료/미완료 항목 추적 |
-| `adr/` | 결정 기록(ADR) — 왜 그렇게 했는가. `0001-spa-manual-ga-pageview.md` 등 |
-| `DATA-MODEL.md` | Firestore 컬렉션 필드 구조 + 필드 주의사항 |
+| `adr/` | 결정 기록(ADR) — 왜 그렇게 했는가. `0001 spa manual ga pageview.md` 등 |
+| `DATA MODEL.md` | Firestore 컬렉션 필드 구조 + 필드 주의사항 |
 | `OPERATIONS.md` | 운영·배포 — 기술 스택·배포·이미지 관리 규칙 |
-| `DEPENDENCY-MAP.md` | 연동 영향범위 — 사용자↔관리자 blast radius |
+| `DEPENDENCY MAP.md` | 연동 영향범위 — 사용자↔관리자 blast radius |
 | `design/DESIGN.md` | 디자인 지침서 — YAML 토큰 + 컴포넌트·색상·타이포 스펙 (BMW 스타일) |
-| `specs/APPLY_SPEC.md` | 수강신청 렌더링 스펙 (enrollment 3-step·설명회 경로) |
+| `specs/APPLY_SPEC.md` | 수강신청 렌더링 스펙 (enrollment 3 step·설명회 경로) |
+| `specs/CONSULT_SPEC.md` | 상담 예약 스펙 (슬롯=문서·트랜잭션·설정 문서) |
 | `specs/COURSES_SPEC.md` | 수업소개 페이지 상세 스펙 (수업 데이터 단일 출처) |
 | `specs/BLOG_SPEC.md` | 블로그 페이지 상세 스펙 |
 
----
+
 
 ## plan/  (작업 자산 — 문서 아님)
 
@@ -136,7 +147,7 @@
 | `redesign/인코딩플러스.dc.html` | **디자인 목업 원본** — 모든 페이지의 참고 기준 |
 | `redesign/uploads/`, `ex/` | 리디자인 스크린샷·테마 HTML 등 스크래치 자산 |
 
----
+
 
 ## scripts/
 
@@ -145,7 +156,7 @@
 | `resetEnrollmentForm.mjs` | Firestore 수강신청 폼 삭제 후 4섹션 구조로 재생성 |
 | `setInitialViews.mjs` | 블로그 포스트 초기 조회수 일괄 설정 |
 
----
+
 
 ## source/
 
@@ -154,7 +165,7 @@
 | `2027년도_특강안내.md` | **비즈니스 데이터 단일 출처** — Stats 수치, 배너 4개, 수업 과정 4개, 수강료, 상담전화. 코드 수치 변경 시 이 파일과 동기화. |
 | `USAGE.md` | 기타 사용 안내 |
 
----
+
 
 ## public/
 
@@ -166,25 +177,37 @@
 | `blog/` | 블로그 대표 이미지 — Firestore `coverImage` 필드에 `/blog/파일명` 으로 참조 |
 | `files/` | 다운로드 파일 (xlsx 등) — 마크다운에서 `/files/파일명` 으로 링크 |
 
----
+
 
 ## Firebase 컬렉션 → 코드 연결
 
 | Firestore 컬렉션 | 읽는 파일 | 쓰는 파일 |
-|----------------|---------|---------|
+|                |         |         |
 | `banners` | Home.tsx | AdminBanners.tsx |
 | `blogPosts` | Blog.tsx, BlogPost.tsx, AdminBlogList.tsx | AdminBlogWrite.tsx |
 | `submissions` | AdminSubmissions.tsx | Apply.tsx |
 | `forms` | Apply.tsx, FormBuilder.tsx | FormBuilder.tsx |
+| `consultations` | Consult.tsx, AdminConsultations.tsx, **AdminSubmissions.tsx**(통합 인박스) | Consult.tsx, AdminConsultations.tsx, AdminSubmissions.tsx(상태변경) |
+| `settings/consultation` | Consult.tsx, AdminConsultations.tsx | AdminConsultations.tsx |
 
----
+
 
 ## 주요 하드코딩 상수 위치
 
 | 데이터 | 위치 |
-|--------|------|
+|------|------|
 | Stats (212명/1위/37명/9년) | `Home.tsx` STATS |
 | 배너 Fallback 4개 | `Home.tsx` FALLBACK_BANNERS |
 | 수업 데이터 4개 | `Courses.tsx` SECTIONS |
 | 블로그 Fallback 3개 | `Blog.tsx` FALLBACK_POSTS |
 | 전형 안내 | `Courses.tsx` ADMISSION_INFO |
+
+## Paused quiz subsystem
+
+The quiz subsystem is intentionally paused, not deleted.
+
+  `src/pages/FormPage.tsx`, `src/pages/admin/Dashboard.tsx`, and `src/pages/admin/Responses.tsx` are retained as paused quiz related pages.
+  These pages are not currently wired in `src/App.tsx` routes.
+  `src/types/index.ts` includes `FormType = 'enrollment' | 'generic' | 'quiz'`; only `quiz` and `Response` are part of the paused quiz subsystem.
+  Do not route public application, seminar application, enrollment, or consultation flows through `responses`.
+  If quiz is revived, update `App.tsx`, `DATA MODEL.md`, `DEPENDENCY MAP.md`, and the relevant specs before treating those pages as active.

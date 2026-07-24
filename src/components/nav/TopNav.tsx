@@ -96,7 +96,7 @@ export default function TopNav({ onMenuOpen }: Props) {
             )
           })}
           <button
-            onClick={() => navigate('/apply')}
+            onClick={() => navigate('/start')}
             className="hover-btn"
             style={{
               marginLeft: 8,
@@ -110,7 +110,7 @@ export default function TopNav({ onMenuOpen }: Props) {
               whiteSpace: 'nowrap',
             }}
           >
-            수강 신청 →
+            신청하기 →
           </button>
         </nav>
       </header>

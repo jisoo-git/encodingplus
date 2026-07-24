@@ -18,7 +18,9 @@ export function resolvePageTitle(pathname: string): string {
   const base = '인코딩플러스'
   if (pathname === '/') return '인코딩플러스 — 디미고 합격률 전국 1위'
   if (pathname === '/courses') return `${base} — 수업 안내`
+  if (pathname === '/start') return `${base} — 상담·신청`
   if (pathname === '/apply') return `${base} — 수강신청`
+  if (pathname === '/consult') return `${base} — 상담 예약`
   if (pathname === '/blog') return `${base} — 입시 블로그`
   if (pathname.startsWith('/blog/')) return `${base} — 입시 블로그 글`
   if (pathname === '/admin/login') return `${base} — 관리자 로그인`
@@ -26,10 +28,28 @@ export function resolvePageTitle(pathname: string): string {
   return base
 }
 
+// 라우트 변경 시 canonical·OG 태그를 현재 경로로 갱신 (JS 를 렌더링하는 크롤러용 SEO 보정.
+// JS 를 실행하지 않는 봇은 vercel.json rewrite → api/prerender.js 가 올바른 태그를 응답한다)
+function syncSeoTags(pathname: string, title: string): void {
+  const url = window.location.origin + pathname
+  document.querySelector('link[rel="canonical"]')?.setAttribute('href', url)
+  document.querySelector('meta[property="og:url"]')?.setAttribute('content', url)
+  document.querySelector('meta[property="og:title"]')?.setAttribute('content', title)
+  document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', title)
+}
+
+// 전환(상담 예약·수강신청) 완료 시 호출. GA4 표준 generate_lead 이벤트 — 채널별 전환 집계용.
+export function trackLead(leadType: 'consult' | 'enrollment' | 'application'): void {
+  const gtag = getGtag()
+  if (!gtag) return
+  gtag('event', 'generate_lead', { lead_type: leadType, send_to: GA_MEASUREMENT_ID })
+}
+
 // 라우트 변경 시 호출. document.title 도 함께 갱신해 브라우저 탭·GA 제목을 일치시킨다.
 export function trackPageView(pathname: string, search = ''): void {
   const title = resolvePageTitle(pathname)
   document.title = title
+  syncSeoTags(pathname, title)
 
   const gtag = getGtag()
   if (!gtag) return

@@ -9,9 +9,15 @@ import {
 } from '@dnd-kit/sortable'
 import SortableQuestion from '../../components/builder/SortableQuestion'
 import { useForms } from '../../hooks/useForms'
-import type { Form, Section, Question, QuestionType } from '../../types'
+import type { Form, Section, Question, QuestionType, FormType } from '../../types'
 
 const newId = () => crypto.randomUUID()
+
+const FORM_TYPE_OPTIONS: { value: FormType; label: string }[] = [
+  { value: 'enrollment', label: '수강신청' },
+  { value: 'generic', label: '일반신청' },
+  { value: 'quiz', label: '퀴즈' },
+]
 
 const TYPE_OPTIONS: { value: QuestionType; label: string }[] = [
   { value: 'short', label: '단답형' },
@@ -272,6 +278,16 @@ export default function FormBuilder() {
       </div>
 
       {/* 섹션 목록 */}
+        <div style={{ marginTop: 12 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#52525b', marginBottom: 6 }}>폼 종류</div>
+          <select
+            value={form.type}
+            onChange={e => setForm(f => f && ({ ...f, type: e.target.value as FormType }))}
+            style={{ width: '100%', border: '1px solid #c8d0dc', borderRadius: 10, padding: '10px 12px', fontSize: 13, background: '#fff', outline: 'none' }}
+          >
+            {FORM_TYPE_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+          </select>
+        </div>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <div style={{ padding: '0 18px', display: 'flex', flexDirection: 'column', gap: 12 }}>
           {form.sections.map((section, sectionIndex) => (

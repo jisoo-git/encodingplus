@@ -5,11 +5,14 @@ import AdminLayout from './layouts/AdminLayout'
 
 import Home from './pages/Home'
 import Courses from './pages/Courses'
+import ApplyHub from './pages/ApplyHub'
 import Apply from './pages/Apply'
+import Consult from './pages/Consult'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 
 import AdminSubmissions from './pages/admin/AdminSubmissions'
+import AdminConsultations from './pages/admin/AdminConsultations'
 import AdminFormList from './pages/admin/AdminFormList'
 import FormBuilder from './pages/admin/FormBuilder'
 import AdminBanners from './pages/admin/AdminBanners'
@@ -27,7 +30,9 @@ export default function App() {
         <Route element={<UserLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
+          <Route path="/start" element={<ApplyHub />} />
           <Route path="/apply" element={<Apply />} />
+          <Route path="/consult" element={<Consult />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<BlogPost />} />
         </Route>
@@ -39,6 +44,7 @@ export default function App() {
         <Route element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
           <Route path="/admin" element={<Navigate to="/admin/submissions" replace />} />
           <Route path="/admin/submissions" element={<AdminSubmissions />} />
+          <Route path="/admin/consultations" element={<AdminConsultations />} />
           <Route path="/admin/builder" element={<AdminFormList />} />
           <Route path="/admin/builder/:id" element={<FormBuilder />} />
           <Route path="/admin/banners" element={<AdminBanners />} />

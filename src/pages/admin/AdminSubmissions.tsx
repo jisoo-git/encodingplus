@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { collection, getDocs, orderBy, query, doc, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebase/config'
+import { fetchAll as fetchConsultAll, updateStatus as updateConsultStatus } from '../../consult/api'
+import { WEEKDAY_LABELS } from '../../consult/types'
 
 interface Submission {
   id: string
@@ -13,6 +15,9 @@ interface Submission {
   status: 'new' | 'confirmed' | 'done'
   submittedAt: { toDate: () => Date } | null
   detail: Record<string, string>
+  source?: 'submission' | 'consult' // 상담예약 통합용
+  date?: string // 상담예약: 날짜
+  hour?: number // 상담예약: 시
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -30,6 +35,7 @@ const STATUS_TABS = ['전체', '새 신청', '확인완료', '상담완료']
 const STATUS_MAP: Record<string, string | null> = {
   '전체': null, '새 신청': 'new', '확인완료': 'confirmed', '상담완료': 'done',
 }
+const CONSULT_FILTER = '__consult__'
 
 function formatDate(sub: Submission) {
   if (!sub.submittedAt) return '—'
@@ -39,8 +45,16 @@ function formatDate(sub: Submission) {
   } catch { return '—' }
 }
 
+function timeOf(sub: Submission): number {
+  if (!sub.submittedAt) return 0
+  try { return sub.submittedAt.toDate().getTime() } catch { return 0 }
+}
+
+const wdLabel = (date: string) => WEEKDAY_LABELS[new Date(`${date}T00:00:00`).getDay()]
+
 export default function AdminSubmissions() {
   const [submissions, setSubmissions] = useState<Submission[]>([])
+  const [consults, setConsults] = useState<Submission[]>([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('전체')
   const [formFilter, setFormFilter] = useState<string | null>(null)
@@ -74,13 +88,35 @@ export default function AdminSubmissions() {
     } catch {}
   }
 
-  useEffect(() => { fetchSubmissions(); fetchForms() }, [])
+  async function fetchConsults() {
+    try {
+      const docs = await fetchConsultAll()
+      setConsults(docs.filter(d => d.kind === 'booking').map(d => ({
+        id: d.id,
+        source: 'consult' as const,
+        name: d.name,
+        phone: d.phone,
+        status: d.status ?? 'new',
+        submittedAt: d.createdAt ?? null,
+        date: d.date,
+        hour: d.hour,
+        detail: (d.grade ? { 학년: d.grade } : {}) as Record<string, string>,
+      })))
+    } catch { setConsults([]) }
+  }
 
-  async function updateStatus(id: string, status: Submission['status']) {
+  useEffect(() => { fetchSubmissions(); fetchForms(); fetchConsults() }, [])
+
+  async function updateStatus(id: string, status: Submission['status'], source?: Submission['source']) {
     setUpdating(true)
     try {
-      await updateDoc(doc(db, 'submissions', id), { status })
-      setSubmissions(prev => prev.map(s => s.id === id ? { ...s, status } : s))
+      if (source === 'consult') {
+        await updateConsultStatus(id, status)
+        setConsults(prev => prev.map(s => s.id === id ? { ...s, status } : s))
+      } else {
+        await updateDoc(doc(db, 'submissions', id), { status })
+        setSubmissions(prev => prev.map(s => s.id === id ? { ...s, status } : s))
+      }
       if (selected?.id === id) setSelected(prev => prev ? { ...prev, status } : prev)
       setToast(`${STATUS_LABEL[status]}(으)로 변경되었습니다`)
       setTimeout(() => setToast(null), 2000)
@@ -88,8 +124,19 @@ export default function AdminSubmissions() {
   }
 
   const statusKey = STATUS_MAP[statusFilter]
-  // 폼 필터 기준 서브셋 (상태 탭·카운트 모두 이 기준)
-  const formFiltered = submissions.filter(s => !formFilter || s.formId === formFilter)
+
+  // submissions + 상담예약 통합 (도착순 정렬)
+  const allRows: Submission[] = [
+    ...submissions.map(s => ({ ...s, source: 'submission' as const })),
+    ...consults,
+  ].sort((a, b) => timeOf(b) - timeOf(a))
+
+  // 폼/유형 필터 기준 서브셋 (상태 탭·카운트 모두 이 기준)
+  const formFiltered = allRows.filter(s => {
+    if (!formFilter) return true
+    if (formFilter === CONSULT_FILTER) return s.source === 'consult'
+    return s.source !== 'consult' && s.formId === formFilter
+  })
   const filtered = formFiltered.filter(s => !statusKey || s.status === statusKey)
 
   const counts = {
@@ -124,13 +171,16 @@ export default function AdminSubmissions() {
           </div>
         </div>
 
-        {/* 폼 필터 pills */}
-        {formList.length > 1 && (
+        {/* 폼/유형 필터 pills */}
+        {(formList.length > 1 || consults.length > 0) && (
           <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 10 }}>
             <button onClick={() => setFormFilter(null)} style={{ padding: '4px 12px', borderRadius: 999, border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', background: formFilter === null ? '#18181b' : '#f0f0f2', color: formFilter === null ? '#fff' : '#52525b' }}>전체</button>
             {formList.map(f => (
               <button key={f.id} onClick={() => setFormFilter(f.id)} style={{ padding: '4px 12px', borderRadius: 999, border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', background: formFilter === f.id ? '#2563eb' : '#f0f0f2', color: formFilter === f.id ? '#fff' : '#52525b' }}>{f.title}</button>
             ))}
+            {consults.length > 0 && (
+              <button onClick={() => setFormFilter(CONSULT_FILTER)} style={{ padding: '4px 12px', borderRadius: 999, border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', background: formFilter === CONSULT_FILTER ? '#6d28d9' : '#f0f0f2', color: formFilter === CONSULT_FILTER ? '#fff' : '#52525b' }}>상담예약</button>
+            )}
           </div>
         )}
 
@@ -165,7 +215,13 @@ export default function AdminSubmissions() {
               const sc = STATUS_COLOR[sub.status] ?? STATUS_COLOR.new
               const detailName = Object.entries(sub.detail || {}).find(([k]) => ['이름', '성명'].some(kw => k.includes(kw)))?.[1] as string | undefined
               const displayName = sub.name || detailName || '—'
-              const displaySub = sub.course || sub.formTitle || ''
+              const isConsult = sub.source === 'consult'
+              const chipLabel = isConsult
+                ? '상담예약'
+                : (formList.find(f => f.id === sub.formId)?.title || sub.formTitle || (sub.course ? '수강신청' : '신청'))
+              const displaySub = isConsult
+                ? `${sub.date} (${wdLabel(sub.date!)}) ${sub.hour}시`
+                : (sub.course || '')
               return (
                 <div
                   key={sub.id}
@@ -187,9 +243,16 @@ export default function AdminSubmissions() {
                         {STATUS_LABEL[sub.status]}
                       </span>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: 12, color: '#71717a', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{displaySub}</span>
-                      <span style={{ fontSize: 11, color: '#b0b8c1', flexShrink: 0, marginLeft: 8 }}>{formatDate(sub)}</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
+                        <span style={{
+                          flexShrink: 0, fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 5,
+                          maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          background: isConsult ? '#ede9fe' : '#f0f0f2', color: isConsult ? '#6d28d9' : '#52525b',
+                        }}>{chipLabel}</span>
+                        {displaySub && <span style={{ fontSize: 12, color: '#71717a', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{displaySub}</span>}
+                      </span>
+                      <span style={{ fontSize: 11, color: '#b0b8c1', flexShrink: 0 }}>{formatDate(sub)}</span>
                     </div>
                   </div>
                   <span style={{ color: '#d4d4d8', fontSize: 16, flexShrink: 0 }}>›</span>
@@ -237,8 +300,8 @@ export default function AdminSubmissions() {
               {/* 폼/수업 + 상태 */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, padding: '12px 14px', background: '#f8f9fb', borderRadius: 10 }}>
                 <div>
-                  <div style={{ fontSize: 11, color: '#8c959f', fontWeight: 600, marginBottom: 2 }}>{selected.course ? '신청 수업' : '폼 종류'}</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#18181b' }}>{selected.course || selected.formTitle || '—'}</div>
+                  <div style={{ fontSize: 11, color: '#8c959f', fontWeight: 600, marginBottom: 2 }}>{selected.source === 'consult' ? '상담 일시' : selected.course ? '신청 수업' : '폼 종류'}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#18181b' }}>{selected.source === 'consult' ? `${selected.date} (${wdLabel(selected.date!)}) ${selected.hour}시` : (selected.course || selected.formTitle || '—')}</div>
                 </div>
                 {(() => {
                   const sc = STATUS_COLOR[selected.status] ?? STATUS_COLOR.new
@@ -262,7 +325,7 @@ export default function AdminSubmissions() {
                   </div>
                 </div>
               ) : (
-                <div style={{ marginBottom: 20, padding: '14px', background: '#f8f9fb', borderRadius: 10, fontSize: 13, color: '#8c959f', textAlign: 'center' }}>상세 응답 없음</div>
+                <div style={{ marginBottom: 20, padding: '14px', background: '#f8f9fb', borderRadius: 10, fontSize: 13, color: '#8c959f', textAlign: 'center' }}>{selected.source === 'consult' ? '상담 예약 (추가 응답 없음)' : '상세 응답 없음'}</div>
               )}
 
               {/* 상태 변경 */}
@@ -273,7 +336,7 @@ export default function AdminSubmissions() {
                     const active = selected.status === s
                     const sc = STATUS_COLOR[s]
                     return (
-                      <button key={s} disabled={active || updating} onClick={() => updateStatus(selected.id, s)} style={{
+                      <button key={s} disabled={active || updating} onClick={() => updateStatus(selected.id, s, selected.source)} style={{
                         flex: 1, padding: '10px 0', borderRadius: 10, cursor: active ? 'default' : 'pointer',
                         border: active ? `2px solid ${sc.bar}` : '1px solid #e5e5ea',
                         background: active ? sc.bg : '#fff',

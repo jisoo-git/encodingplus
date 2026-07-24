@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { collection, addDoc, getDocs, serverTimestamp, query, where } from 'firebase/firestore'
+import { collection, addDoc, getDocs, getDoc, doc, serverTimestamp, query, where } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import type { Form, Question } from '../types'
+import { resolveSeminarApplyPath, isSeminarFormId, SEMINAR_APPLY_ENABLED } from '../forms/routes'
+import { notifySubmissionCreated } from '../lib/discordNotifications'
+import { getAttribution, formatAttribution } from '../lib/attribution'
+import { trackLead } from '../lib/analytics'
 
 const COURSE_OPTIONS = [
   { name: '입시 단기특강', desc: '특별전형 + 일반전형 병행 · 토요일 6h + 수요일 1h' },
@@ -30,7 +34,8 @@ function findAnswer(questions: Question[], keyword: string, answers: Record<stri
 export default function Apply() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const formType = searchParams.get('type')
+  const formId = searchParams.get('formId')
+  const isSeminarAlias = searchParams.get('type') === 'seminar'
   const [step, setStep] = useState(1)
   const [privacy, setPrivacy] = useState<string | null>(null)
   const [course, setCourse] = useState<string | null>(null)
@@ -40,29 +45,51 @@ export default function Apply() {
   const [submitted, setSubmitted] = useState(false)
   const [activeForm, setActiveForm] = useState<Form | null>(null)
   const [formLoading, setFormLoading] = useState(true)
+  const [isSeminarBlocked, setIsSeminarBlocked] = useState(false)
 
   useEffect(() => {
-    async function fetchActiveForm() {
+    async function fetchForm() {
+      setFormLoading(true)
+      setActiveForm(null)
+      setIsSeminarBlocked(false)
       try {
-        const q = formType
-          ? query(collection(db, 'forms'), where('type', '==', formType))
-          : query(collection(db, 'forms'), where('isActive', '==', true))
-        const snap = await getDocs(q)
-        if (!snap.empty) {
-          const d = snap.docs[0]
-          setActiveForm({ id: d.id, ...(d.data() as Omit<Form, 'id'>) })
+        if (!formId && isSeminarAlias) {
+          // 설명회 신청 비활성화 상태에서는 ?type=seminar 별칭도 마감 안내로 대체한다.
+          if (!SEMINAR_APPLY_ENABLED) {
+            setIsSeminarBlocked(true)
+            return
+          }
+          const seminarPath = await resolveSeminarApplyPath()
+          if (seminarPath) navigate(seminarPath, { replace: true })
+          return
+        }
+
+        if (formId) {
+          const snap = await getDoc(doc(db, 'forms', formId))
+          if (snap.exists()) {
+            const form = { id: snap.id, ...(snap.data() as Omit<Form, 'id'>) }
+            // 설명회 신청 비활성화 상태에서는 formId 직접 접근(외부 링크 포함)도 차단한다.
+            if (!SEMINAR_APPLY_ENABLED && (await isSeminarFormId(formId, form.type))) {
+              setIsSeminarBlocked(true)
+              return
+            }
+            if (form.type !== 'quiz') setActiveForm(form)
+          }
+          return
+        }
+
+        const snap = await getDocs(query(collection(db, 'forms'), where('isActive', '==', true)))
+        const activeEnrollment = snap.docs.find(d => (d.data() as Partial<Form>).type === 'enrollment')
+        if (activeEnrollment) {
+          setActiveForm({ id: activeEnrollment.id, ...(activeEnrollment.data() as Omit<Form, 'id'>) })
         }
       } catch {}
       finally { setFormLoading(false) }
     }
-    fetchActiveForm()
-  }, [formType])
+    fetchForm()
+  }, [formId, isSeminarAlias, navigate])
 
-  // formType 파라미터가 명시된 경우 해당 타입 폼만 판별, 없으면 enrollment 기본
-  const isEnrollment = formType
-    ? activeForm?.type === 'enrollment'
-    : !activeForm || activeForm.type === 'enrollment'
-
+  const isEnrollment = activeForm?.type === 'enrollment' || (!formId && !isSeminarAlias && !activeForm)
   // ── 수강신청 전용 ──
   const confirmSection = activeForm?.sections.find(s => s.title === '신청 확인') ?? null
   const confirmInfos = (confirmSection?.questions ?? []).filter(q => q.type === 'info')
@@ -81,6 +108,35 @@ export default function Apply() {
 
   // ── 범용 폼 (섹션 = 1스텝) ──
   const [genericStep, setGenericStep] = useState(0)
+
+  // 설명회 신청 비활성화 상태 — ?type=seminar 별칭 또는 설명회 formId 직접 접근 시 마감 안내만 보여준다.
+  if (isSeminarBlocked) {
+    return (
+      <div className="md:max-w-[680px] md:mx-auto md:px-7">
+        <div style={{ padding: '64px 24px', textAlign: 'center' }}>
+          <div style={{
+            width: 64, height: 64, borderRadius: '50%', background: '#eff6ff', border: '2px solid #bfdbfe',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 26,
+          }}>📢</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: '#18181b', marginBottom: 8 }}>설명회 신청이 마감되었습니다</div>
+          <div style={{ fontSize: 14, color: '#71717a', lineHeight: 1.6, marginBottom: 28 }}>
+            현재 설명회 신청을 받고 있지 않습니다.<br />수강 신청과 상담 예약은 계속 이용하실 수 있습니다.
+          </div>
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+            <button onClick={() => navigate('/')}
+              style={{ padding: '13px 20px', border: '1px solid #c8d0dc', borderRadius: 11, background: '#fff', fontSize: 15, fontWeight: 600, color: '#52525b', cursor: 'pointer' }}>
+              홈으로
+            </button>
+            <button onClick={() => navigate('/start')}
+              style={{ padding: '13px 20px', border: 'none', borderRadius: 11, background: '#2563eb', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+              신청 허브로
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const genericSections = activeForm?.sections ?? []
   const currentGenericSection = genericSections[genericStep]
   const currentGenericQuestions = currentGenericSection?.questions ?? []
@@ -133,11 +189,18 @@ export default function Apply() {
       const name  = extract(['이름', '성명'])
       const phone = extract(['연락처', '전화번호', '전화'])
       const school = extract(['학교'])
+      const detail = Object.fromEntries(
+        allQuestions
+          .filter(q => q.type !== 'info' && answers[q.id] !== undefined)
+          .map(q => [q.label, Array.isArray(answers[q.id]) ? (answers[q.id] as string[]).join(', ') : answers[q.id]])
+      )
 
+      const attribution = getAttribution()
       await addDoc(collection(db, 'submissions'), {
         ...(name   && { name }),
         ...(phone  && { phone }),
         ...(school && { school }),
+        ...(attribution ? { attribution } : {}),
         submittedAt: serverTimestamp(),
         status: 'new',
         formId: activeForm?.id,
@@ -147,6 +210,16 @@ export default function Apply() {
             .filter(q => q.type !== 'info' && answers[q.id] !== undefined)
             .map(q => [q.label, Array.isArray(answers[q.id]) ? (answers[q.id] as string[]).join(', ') : answers[q.id]])
         ),
+      })
+      trackLead(activeForm?.type === 'enrollment' ? 'enrollment' : 'application')
+      await notifySubmissionCreated({
+        kind: activeForm?.type === 'enrollment' ? 'enrollment' : 'application',
+        title: activeForm?.title ?? '\uC2E0\uCCAD',
+        name,
+        phone,
+        school,
+        formTitle: activeForm?.title,
+        detail: attribution ? { ...detail, \uC720\uC785\uACBD\uB85C: formatAttribution(attribution) } : detail,
       })
       setSubmitted(true)
     } catch {
@@ -173,19 +246,36 @@ export default function Apply() {
   const handleSubmit = async () => {
     setSubmitting(true)
     try {
+      const name = findAnswer(step3Questions, '\uC774\uB984', answers)
+      const school = findAnswer(step3Questions, '\uD559\uAD50', answers)
+      const phone = findAnswer(step3Questions, '\uC5F0\uB77D\uCC98', answers) || findAnswer(step3Questions, '\uC804\uD654', answers)
+      const detail = Object.fromEntries(
+        step3Questions
+          .filter(q => q.type !== 'info' && answers[q.id] !== undefined)
+          .map(q => [q.label, Array.isArray(answers[q.id]) ? (answers[q.id] as string[]).join(', ') : answers[q.id]])
+      )
+      const attribution = getAttribution()
       await addDoc(collection(db, 'submissions'), {
-        name: findAnswer(step3Questions, '이름', answers),
+        name,
         course,
-        school: findAnswer(step3Questions, '학교', answers),
-        phone: findAnswer(step3Questions, '연락처', answers) || findAnswer(step3Questions, '전화', answers),
+        school,
+        phone,
         submittedAt: serverTimestamp(),
         status: 'new',
         formId: activeForm?.id,
-        detail: Object.fromEntries(
-          step3Questions
-            .filter(q => q.type !== 'info' && answers[q.id] !== undefined)
-            .map(q => [q.label, Array.isArray(answers[q.id]) ? (answers[q.id] as string[]).join(', ') : answers[q.id]])
-        ),
+        detail,
+        ...(attribution ? { attribution } : {}),
+      })
+      trackLead('enrollment')
+      await notifySubmissionCreated({
+        kind: 'enrollment',
+        title: '\uC218\uAC15\uC2E0\uCCAD',
+        name,
+        phone,
+        school,
+        course: course ?? undefined,
+        formTitle: activeForm?.title,
+        detail: attribution ? { ...detail, \uC720\uC785\uACBD\uB85C: formatAttribution(attribution) } : detail,
       })
       setSubmitted(true)
     } catch {
